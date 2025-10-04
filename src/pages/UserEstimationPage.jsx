@@ -139,13 +139,13 @@ export function UserEstimationPage({}) {
                   <BarChart
                     data={chartData}
                     animationBegin={0}
-                    animationDuration={isSliderDragging ? 0 : 400}
+                    animationDuration={isSliderDragging ? 0 : 100}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                       dataKey="name"
                       animationBegin={0}
-                      animationDuration={isSliderDragging ? 0 : 400}
+                      animationDuration={isSliderDragging ? 0 : 100}
                       angle={-45}
                       textAnchor="end"
                       height={100}
@@ -153,7 +153,7 @@ export function UserEstimationPage({}) {
                     />
                     <YAxis
                       animationBegin={0}
-                      animationDuration={isSliderDragging ? 0 : 400}
+                      animationDuration={isSliderDragging ? 0 : 100}
                     />
                     <Tooltip
                       formatter={(value, name, props) => {
@@ -166,8 +166,8 @@ export function UserEstimationPage({}) {
                       dataKey="amount"
                       radius={[4, 4, 0, 0]}
                       animationBegin={0}
-                      animationDuration={isSliderDragging ? 0 : 400}
-                      animationEasing="ease-out"
+                      animationDuration={isSliderDragging ? 0 : 20}
+                      animationEasing="ease-in-out"
                     >
                       {chartData.map((entry, index) => (
                         <Cell
