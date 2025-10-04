@@ -14,12 +14,12 @@ const Card = ({
   const formatTextWithBoldNumbers = (text) => {
     if (!text) return null;
     
-    // Split text by numbers and format them
-    const parts = text.toString().split(/(\d+(?:[\.,]\d+)*)/g);
+    // Split text by numbers (including decimals and commas) and optional % symbol
+    const parts = text.toString().split(/(\d+(?:[\.,]\d+)*%?)/g);
     
     return parts.map((part, index) => {
-      // Check if part is a number (including decimals and commas)
-      if (/^\d+(?:[\.,]\d+)*$/.test(part)) {
+      // Check if part is a number (including decimals, commas, and % symbol)
+      if (/^\d+(?:[\.,]\d+)*%?$/.test(part)) {
         return <strong key={index}>{part}</strong>;
       }
       return part;
@@ -29,7 +29,7 @@ const Card = ({
   // Determine card styling based on variant
   const getCardClasses = () => {
     if (variant === "zus") {
-      return "bg-(--color-zus-green) border-2 border-gray-300 text-white";
+      return "border-4 border-gray-100";
     }
     if (variant === "highlight") {
       return "bg-white border-2 border-(--color-zus-green)";
@@ -39,7 +39,7 @@ const Card = ({
 
   const getTitleClasses = () => {
     if (variant === "zus") {
-      return "font-semibold text-lg mb-2 text-white"; // smaller font for ZUS variant
+      return "font-semibold mb-2 text-black"; // smaller font for ZUS variant
     }
     if (variant === "highlight") {
       return "font-medium text-lg mb-2 text-zus-dark-blue"; // smaller title for highlight variant
@@ -49,7 +49,7 @@ const Card = ({
 
   const getDescriptionClasses = () => {
     if (variant === "zus") {
-      return "text-gray-100"; // lighter text for ZUS variant
+      return "text-gray-700"; // lighter text for ZUS variant
     }
     if (variant === "highlight") {
       return "text-3xl font-medium text-zus-blue"; // bigger, bold description for highlight variant
@@ -62,7 +62,7 @@ const Card = ({
       return "text-sm text-zus-dark-blue mt-1"; // small font for highlight variant
     }
     if (variant === "zus") {
-      return "text-sm text-gray-200 mt-1"; // small font for ZUS variant
+      return "text-sm text-gray-500 mt-1"; // small font for ZUS variant
     }
     return "text-sm text-gray-500 mt-1"; // small font for default variant
   };
@@ -80,7 +80,7 @@ const Card = ({
       )}
       <div className="flex-1">
         <h2 className={getTitleClasses()}>
-          {formatTextWithBoldNumbers(title)}
+          {title/* {formatTextWithBoldNumbers(title)} */}
         </h2>
         {description && (
           <p className={getDescriptionClasses()}>
@@ -89,7 +89,7 @@ const Card = ({
         )}
         {secondaryDescription && (
           <p className={getSecondaryDescriptionClasses()}>
-            {formatTextWithBoldNumbers(secondaryDescription)}
+            {secondaryDescription}
           </p>
         )}
       </div>

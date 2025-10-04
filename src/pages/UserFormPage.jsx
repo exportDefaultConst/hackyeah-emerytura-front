@@ -1,15 +1,17 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import DropdownList from "../components/DropdownList";
 import { useNavigate } from "react-router";
 import Divider from "../components/Divider";
-import { API_URL } from "../constants";
+import { calculatePension } from "../redux/slices/pensionSlice";
 
 const UserFormPage = () => {
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading: pensionLoading, error: pensionError } = useSelector((state) => state.pension);
 
   const handleInputChange = (field, value) => {
     // Handle default values when arrows are pressed on empty fields
@@ -68,90 +70,39 @@ const UserFormPage = () => {
     
     if (!isFormValid) return;
     
-    setIsSubmitting(true);
-    
     try {
       // Convert form data to proper types and handle empty values
       const userData = {
         age: parseInt(formData.age) || 35,
-        gender: formData.gender === "Kobieta" ? "female" : formData.gender === "Mężczyzna" ? "male" : "other",
-        gross_salary: parseFloat(formData.gross_salary) || 8000,
-        work_start_year: parseInt(formData.work_start_year) || 2010,
-        work_end_year: parseInt(formData.work_end_year) || 2045,
-        industry: formData.industry || "IT",
-        position: formData.position || "Employee",
+        gender: formData.gender === "Kobieta" ? "female" : formData.gender === "Mężczyzna" ? "male" : "",
+        gross_salary: parseFloat(formData.gross_salary) || 0.0,
+        work_start_year: parseInt(formData.work_start_year) || 0,
+        work_end_year: parseInt(formData.work_end_year) || 0,
+        industry: formData.industry || "",
+        position: formData.position || "",
         zus_account_balance: formData.zus_account_balance ? parseFloat(formData.zus_account_balance) : 0.0,
         zus_subaccount_balance: formData.zus_subaccount_balance ? parseFloat(formData.zus_subaccount_balance) : 0.0,
         sick_leave_days_per_year: formData.sick_leave_days_per_year ? parseFloat(formData.sick_leave_days_per_year) : 0.0
       };
 
-      console.log('Sending request to API with data:', userData);
+      console.log('Sending request to Redux with data:', userData);
 
-      const res = await fetch(`${API_URL}/api/calculate_pension`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          user_data: userData
-        }),
-      });
+      // Dispatch the Redux action
+      const result = await dispatch(calculatePension(userData));
       
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error('API Error Response:', errorText);
-        throw new Error(`HTTP ${res.status}: ${errorText}`);
+      if (calculatePension.fulfilled.match(result)) {
+        // Success - navigate to dashboard
+        console.log('Pension calculation successful:', result.payload);
+        navigate('/dashboard');
+      } else {
+        // Error - handle rejection
+        console.error('Pension calculation failed:', result.error);
+        alert(`Błąd podczas obliczania emerytury: ${result.error?.message || 'Nieznany błąd'}`);
       }
-
-      const data = await res.json();
-      console.log('Received response:', data);
-      
-      // Navigate to dashboard with the response data
-      navigate('/dashboard', { state: { pensionData: data } });
       
     } catch (error) {
       console.error("Error calculating pension: ", error);
-      
-      let errorMessage = 'Wystąpił nieoczekiwany błąd.';
-      
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        errorMessage = 'Błąd połączenia z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.';
-      } else if (error.message.includes('NetworkError')) {
-        errorMessage = 'Nie można połączyć się z serwerem. Serwer może być niedostępny.';
-      } else if (error.message.includes('CORS')) {
-        errorMessage = 'Problem z uprawnieniami dostępu do API.';
-      } else if (error.message.includes('HTTP')) {
-        errorMessage = `Błąd API: ${error.message}`;
-      } else if (error.message.includes('missing') || error.message.includes('required')) {
-        errorMessage = 'Błąd walidacji danych. Sprawdź czy wszystkie wymagane pola są wypełnione.';
-      }
-      
-      alert(`Błąd podczas obliczania emerytury: ${errorMessage}`);
-      
-      // For testing purposes, navigate to dashboard with mock data
-      console.log('Using mock data for testing...');
-      navigate('/dashboard', { 
-        state: { 
-          pensionData: {
-            current_pension_projection: 3840.0,
-            indexed_pension_projection: 2760.0,
-            replacement_rate: 48.0,
-            minimum_pension_gap: 844.8,
-            years_to_work_longer: 7,
-            sick_leave_impact: -1300.0,
-            calculation_details: {
-              assumptions: [
-                "Wynagrodzenie brutto stałe: 8000 PLN/mc przez cały okres pracy",
-                "Składka emerytalna: 1561,60 PLN/mc (19,52% wynagrodzenia brutto)",
-                "Liczba lat pracy: 35 (2010-2045)"
-              ]
-            }
-          } 
-        } 
-      });
-    } finally {
-      setIsSubmitting(false);
+      alert(`Błąd podczas obliczania emerytury: ${error.message}`);
     }
   };
 
@@ -196,7 +147,7 @@ const UserFormPage = () => {
                 placeholder="Wybierz płeć"
                 value={formData.gender}
                 onChange={(value) => handleInputChange('gender', value)}
-                options={["Kobieta", "Mężczyzna", "Inna", "Nie chcę podawać"]}>
+                options={["Kobieta", "Mężczyzna"]}>
               </DropdownList>
             </div>
           </div>
@@ -323,11 +274,18 @@ const UserFormPage = () => {
             </Button>
             <Button 
             type="primary" 
-            disabled={!isFormValid || isSubmitting} 
+            disabled={!isFormValid || pensionLoading} 
             customStyle="flex justify-center">
-              {isSubmitting ? 'Obliczanie...' : 'Oblicz emeryturę'}
+              {pensionLoading ? 'Obliczanie...' : 'Oblicz emeryturę'}
             </Button>
           </div>
+
+          {pensionError && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-3">
+              <p className="text-sm text-red-600">{pensionError}</p>
+            </div>
+          )}
+
         </form>
       </Card>
     </div>
