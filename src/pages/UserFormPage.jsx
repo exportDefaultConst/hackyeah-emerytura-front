@@ -45,7 +45,32 @@ const UserFormPage = () => {
         return;
       }
     }
-    setFormData(prev => ({...prev,[field] : value}));
+    
+    setFormData(prev => {
+      const newFormData = {...prev, [field]: value};
+      
+      // Auto-calculate work years when both age and gender are available
+      if ((field === 'age' || field === 'gender') && newFormData.age && newFormData.gender) {
+        const age = parseInt(newFormData.age);
+        if (!isNaN(age) && age > 0) {
+          const workStartYear = 2025 - age + 18;
+          let workEndYear;
+          
+          if (newFormData.gender === 'Mężczyzna') {
+            workEndYear = workStartYear + 65;
+          } else if (newFormData.gender === 'Kobieta') {
+            workEndYear = workStartYear + 60;
+          }
+          
+          if (workEndYear) {
+            newFormData.work_start_year = workStartYear.toString();
+            newFormData.work_end_year = workEndYear.toString();
+          }
+        }
+      }
+      
+      return newFormData;
+    });
   };
 
   const PersonalInfo = {
