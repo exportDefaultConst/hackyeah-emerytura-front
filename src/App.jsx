@@ -2,6 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import AppLayout from "./layout/AppLayout";
 import PageExample from "./pages/PageExample";
 import Account from "./pages/Account";
+import FrontPage from "./pages/FrontPage";
+import UserEstimationPage from "./pages/UserEstimationPage";
+import UserFormPage from "./pages/UserFormPage";
 
 const router = createBrowserRouter([
   {
@@ -10,13 +13,18 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <div>testtesttest</div>,
+        element: <FrontPage />,
         errorElement: <div>error on path: "/"</div>,
       },
       {
-        path: "/moje-konto",
-        element: <Account />,
-        errorElement: <div>error on path: "/moje-konto"</div>,
+        path: "/jaka-chcesz",
+        element: <UserEstimationPage />,
+        errorElement: <div>error on path: "/jaka-chcesz"</div>,
+      },
+      {
+        path: "/wprowadz-dane",
+        element: <UserFormPage />,
+        errorElement: <div>error on path: "/wprowadz-dane"</div>,
       },
     ],
   },

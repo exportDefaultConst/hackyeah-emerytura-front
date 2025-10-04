@@ -12,7 +12,8 @@ const Button = ({
     "px-4 py-2 font-semibold rounded-lg shadow-md duration-200 transform hover:scale-105 focus:outline-none focus:ring-none cursor-pointer w-full";
 
   const variantClasses = {
-    primary: "bg-(--color-zus-green) text-white hover:bg-(--color-zus-white) hover:text-(--color-zus-green)",
+    primary:
+      "bg-(--color-zus-green) text-white hover:bg-(--color-zus-white) hover:text-(--color-zus-green) transition-all duration-300",
     secondary: "bg-gray-300 text-gray-800 hover:bg-zinc-400",
     danger: "bg-red-600 text-white hover:bg-red-700",
     warning: "bg-yellow-400",

@@ -1,9 +1,16 @@
 import React from "react";
 
-const Card = ({ children, customClass, title, description, imageSrc, button }) => {
+const Card = ({
+  children,
+  customClass,
+  title,
+  description,
+  imageSrc,
+  button,
+}) => {
   return (
     <div
-      className={`bg-white rounded-2xl shadow-lg p-6 border border-gray-200 m-4 ${customClass} flex items-center`}
+      className={`bg-white rounded-2xl shadow-lg p-6 border border-gray-200 m-4 ${customClass} `}
     >
       {imageSrc && (
         <img

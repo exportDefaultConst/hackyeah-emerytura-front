@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useResolvedPath } from "react-router";
-import Header from "./Header";
-import Footer from "./Footer";
 import ErrorPopup from "./ErrorPopup";
 import { useDispatch, useSelector } from "react-redux";
 import { acknowledgeError } from "../redux/slices/userSlice";
@@ -9,10 +7,6 @@ import Loader from "./Loader";
 import LoginRegister from "./LoginRegister";
 import FloatingButton from "../components/FloatingButton";
 import FloatingChat from "../components/FloatingChat";
-import FrontPage from "./FrontPage";
-import UserEstimationPage from "./UserEstimationPage";
-import UserFormPage from "./UserFormPage";
-import DashboardPage from "./DashboardPage";
 
 const AppLayout = () => {
   const dispatch = useDispatch();
@@ -22,12 +16,7 @@ const AppLayout = () => {
   const [showLoader, setShowLoader] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const [isFrontPageVisible, SetFrontPageVisible] = useState(false);
-  const [isUserEstimationVisible, setUserEstimationVisible] = useState(true);
-  // const [isUserFormPage, setUserEstimationVisible] = useState(false);
-  // const [isUserEstimationVisible, setUserEstimationVisible] = useState(false);
 
-  
   useEffect(() => {
     if (loading) {
       setShowLoader(true);
@@ -68,7 +57,6 @@ const AppLayout = () => {
     setShowChat(!showChat);
   };
 
-
   const handleBack = () => {
     setUserEstimationVisible(true);
   };
@@ -77,7 +65,7 @@ const AppLayout = () => {
     <>
       <div className="min-h-screen flex flex-col">
         <main className="flex-grow max-w-full max-h-full">
-          <FrontPage/>
+          <Outlet />
           {/* {isUserEstimationVisible && <UserEstimationPage/>} */}
           {/* <UserFormPage onBack={handleBack}/> */}
           {/* <DashboardPage/> */}
