@@ -4,7 +4,7 @@ html {
   font-family: "Nunito";
 }
 
-@theme {
+:root {
   --color-zus-yellow: #FFB34F; 
   --color-zus-green: #00993F; 
   --color-zus-grey: #BEC3CE;
@@ -45,4 +45,36 @@ html {
 
 .color-zus-white {
   color: var(--color-zus-white);
-} 
+}
+
+/* Background color classes for ZUS colors */
+.bg-zus-blue {
+  background-color: var(--color-zus-blue);
+}
+
+.bg-zus-dark-blue {
+  background-color: var(--color-zus-dark-blue);
+}
+
+/* Border color classes for ZUS colors */
+.border-zus-blue {
+  border-color: var(--color-zus-blue);
+}
+
+.border-zus-dark-blue {
+  border-color: var(--color-zus-dark-blue);
+}
+
+/* Custom class to override description color to red */
+.red-description {
+  border-color: var(--color-zus-red) !important;
+}
+
+.red-description p:first-of-type {
+  color: var(--color-zus-red) !important;
+}
+
+/* Custom class to override description color to green */
+.green-description p:first-of-type {
+  color: var(--color-zus-green) !important;
+}
