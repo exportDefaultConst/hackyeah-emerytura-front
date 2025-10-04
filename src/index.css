@@ -3,3 +3,14 @@
 html {
   font-family: "Nunito";
 }
+
+@theme {
+  --color-zus-yellow: #FFB34F; 
+  --color-zus-green: #00993F; 
+  --color-zus-grey: #BEC3CE;
+  --color-zus-blue: #3F84D2;
+  --color-zus-dark-blue: #00416E;
+  --color-zus-red: #F05E5E;
+  --color-zus-black: #000000;
+  --color-zus-white: #FFFFFF;
+}
