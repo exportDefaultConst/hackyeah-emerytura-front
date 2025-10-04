@@ -9,9 +9,8 @@ import Loader from "./Loader";
 import LoginRegister from "./LoginRegister";
 import FloatingButton from "../components/FloatingButton";
 import FloatingChat from "../components/FloatingChat";
-import Card from "../components/Card";
-import zusLogoImg from '../assets/zus_logo.png';
-import Button from "../components/Button";
+import FrontPage from "./FrontPage";
+
 
 const AppLayout = () => {
   const dispatch = useDispatch();
@@ -66,12 +65,7 @@ const AppLayout = () => {
     <>
       <div className="min-h-screen flex flex-col">
         <main className="flex-grow max-w-full max-h-full">
-          <Card 
-          title="Symulator emerytalny ZUS" 
-          description="Sprawdź czy twoje oczekiwania pokrywają się z rzeczywistością. 
-          Dowiedz się więcej o swojej przyszłości finansowej."
-          imageSrc={zusLogoImg}
-          button={<Button text="Uruchom"/>}/>
+          <FrontPage></FrontPage>
         </main>
       </div>
       {error && (
