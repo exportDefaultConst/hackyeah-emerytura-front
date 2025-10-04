@@ -11,26 +11,26 @@ const initialState = {
 
 export const login = createAsyncThunk(
   "user/login",
-  async ({ username, password }, { rejectWithValue }) => {
-    try {
-      const res = await fetch(`http://192.168.100.2:8080/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ username: username, password: password }),
-      });
-      if (!res.ok) {
-        throw new Error(errorFormatter(res.status));
-      }
+    async ({ username, password }, { rejectWithValue }) => {
+      try {
+        const res = await fetch(`http://192.168.100.2:8080/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ username: username, password: password }),
+        });
+        if (!res.ok) {
+          throw new Error(errorFormatter(res.status));
+        }
 
-      const data = await res.json();
-      if (data) return data;
-    } catch (error) {
-      console.error("ERROR IN ASYNC THUNK user/login: ", error);
-      return rejectWithValue(`Logowanie nieudane: ${error.message}`);
-    }
+        const data = await res.json();
+        if (data) return data;
+      } catch (error) {
+        console.error("ERROR IN ASYNC THUNK user/login: ", error);
+        return rejectWithValue(`Logowanie nieudane: ${error.message}`);
+      }
   }
 );
 

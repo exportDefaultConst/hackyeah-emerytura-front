@@ -17,6 +17,7 @@ const Card = ({ children, customClass, title, description, imageSrc, button }) =
         {description && <p className="text-gray-600">{description}</p>}
       </div>
       {button && <div className="ml-4">{button}</div>}
+      {children}
     </div>
   );
 };
