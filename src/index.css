@@ -14,3 +14,35 @@ html {
   --color-zus-black: #000000;
   --color-zus-white: #FFFFFF;
 }
+
+.color-zus-yellow {
+  color: var(--color-zus-yellow);
+}
+
+.color-zus-green {
+  color: var(--color-zus-green);
+}
+
+.color-zus-grey {
+  color: var(--color-zus-grey);
+}
+
+.color-zus-blue {
+  color: var(--color-zus-blue);
+}
+
+.color-zus-dark-blue {
+  color: var(--color-zus-dark-blue);
+}
+
+.color-zus-red {
+  color: var(--color-zus-red);
+}
+
+.color-zus-black {
+  color: var(--color-zus-black);
+} 
+
+.color-zus-white {
+  color: var(--color-zus-white);
+} 
