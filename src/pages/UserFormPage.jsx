@@ -166,168 +166,170 @@ const UserFormPage = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="text-center space-y-2">
-          <h2 className="text-4xl color-zus-green font-bold">Symulator emerytalny</h2>
-          <p className="text-black">
-            Wypełnij poniższe dane, aby obliczyć Twoją składkę emerytalną.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <p>Wiek</p>
-            <Input
-              id="age"
-              type="number"
-              placeholder="np. 35"
-              value={formData.age}
-              onChange={(e) => handleInputChange('age', e.target.value)}
-              min={0}
-              max={120}
-              required
-            />
+      <Card customClass="p-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="text-center space-y-2">
+            <h2 className="text-4xl color-zus-green font-bold">Symulator emerytalny</h2>
+            <p className="text-black">
+              Wypełnij poniższe dane, aby obliczyć Twoją składkę emerytalną.
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <p>Płeć</p>
-            <DropdownList 
-              placeholder="Wybierz płeć"
-              value={formData.gender}
-              onChange={(value) => handleInputChange('gender', value)}
-              options={["Kobieta", "Mężczyzna", "Inna", "Nie chcę podawać"]}>
-            </DropdownList>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6">
-          <div className="space-y-2">
-            <p>Wynagrodzenie brutto (PLN/miesiąc)</p>
-            <Input
-              id="gross_salary"
-              type="number"
-              placeholder="np. 8000"
-              value={formData.gross_salary}
-              onChange={(e) => handleInputChange('gross_salary', e.target.value)}
-              step={100}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <p>Rok rozpoczęcia pracy</p>
-            <Input
-              id="work_start_year"
-              type="number"
-              placeholder="np. 2010"
-              value={formData.work_start_year}
-              onChange={(e) => handleInputChange('work_start_year', e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <p>Rok zakończenia pracy</p>
-            <Input
-              id="work_end_year"
-              type="number"
-              placeholder="np. 2045"
-              value={formData.work_end_year}
-              onChange={(e) => handleInputChange('work_end_year', e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <p>Branża</p>
-            <DropdownList 
-              placeholder="Wybierz branżę"
-              value={formData.industry}
-              onChange={(value) => handleInputChange('industry', value)}
-              options={["IT", "Finanse", "Edukacja", "Ochrona zdrowia", "Produkcja", "Handel", "Transport", "Budownictwo", "Inne"]}>
-            </DropdownList>
-          </div>
-
-          <div className="space-y-2">
-            <p>Stanowisko</p>
-            <Input
-              id="position"
-              type="text"
-              placeholder="np. Senior Developer"
-              value={formData.position}
-              onChange={(e) => handleInputChange('position', e.target.value)}
-              required
-            />
-          </div>
-        </div>
-
-        <Divider />
-        {/* Optional fields section */}
-        <div className="">
-          <h3 
-            className="text-lg font-semibold mb-4 text-gray-500 cursor-pointer hover:underline hover:text-gray-900 transition-all duration-100"
-            onClick={() => setShowAdvancedData(!showAdvancedData)}
-          >
-            Zaawansowane Dane
-          </h3>
-          {showAdvancedData && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <p>Środki na koncie ZUS (PLN)</p>
-                <Input
-                  id="zus_account_balance"
-                  type="number"
-                  placeholder="np. 50000"
-                  value={formData.zus_account_balance}
-                  onChange={(e) => handleInputChange('zus_account_balance', e.target.value)}
-                  step={1000}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <p>Środki na subkoncie ZUS (PLN)</p>
-                <Input
-                  id="zus_subaccount_balance"
-                  type="number"
-                  placeholder="np. 15000"
-                  value={formData.zus_subaccount_balance}
-                  onChange={(e) => handleInputChange('zus_subaccount_balance', e.target.value)}
-                  step={1000}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <p>Dni zwolnień lekarskich rocznie</p>
-                <Input
-                  id="sick_leave_days_per_year"
-                  type="number"
-                  placeholder="np. 5"
-                  value={formData.sick_leave_days_per_year}
-                  onChange={(e) => handleInputChange('sick_leave_days_per_year', e.target.value)}
-                />
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <p>Wiek</p>
+              <Input
+                id="age"
+                type="number"
+                placeholder="np. 35"
+                value={formData.age}
+                onChange={(e) => handleInputChange('age', e.target.value)}
+                min={0}
+                max={120}
+                required
+              />
             </div>
-          )}
-        </div>
 
-        <div className="flex flex-col md:flex-row justify-between pt-4 gap-6">
-          <Button 
-          type="secondary" 
-          variant="outline" 
-          onClick={() => navigate('/jaka-chcesz')}
-          customStyle="flex justify-center">
-            Wstecz
-          </Button>
-          <Button 
-          type="primary" 
-          disabled={!isFormValid || isSubmitting} 
-          customStyle="flex justify-center">
-            {isSubmitting ? 'Obliczanie...' : 'Oblicz emeryturę'}
-          </Button>
-        </div>
-      </form>
+            <div className="space-y-2">
+              <p>Płeć</p>
+              <DropdownList 
+                placeholder="Wybierz płeć"
+                value={formData.gender}
+                onChange={(value) => handleInputChange('gender', value)}
+                options={["Kobieta", "Mężczyzna", "Inna", "Nie chcę podawać"]}>
+              </DropdownList>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-2">
+              <p>Wynagrodzenie brutto (PLN/miesiąc)</p>
+              <Input
+                id="gross_salary"
+                type="number"
+                placeholder="np. 8000"
+                value={formData.gross_salary}
+                onChange={(e) => handleInputChange('gross_salary', e.target.value)}
+                step={100}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <p>Rok rozpoczęcia pracy</p>
+              <Input
+                id="work_start_year"
+                type="number"
+                placeholder="np. 2010"
+                value={formData.work_start_year}
+                onChange={(e) => handleInputChange('work_start_year', e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <p>Rok zakończenia pracy</p>
+              <Input
+                id="work_end_year"
+                type="number"
+                placeholder="np. 2045"
+                value={formData.work_end_year}
+                onChange={(e) => handleInputChange('work_end_year', e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <p>Branża</p>
+              <DropdownList 
+                placeholder="Wybierz branżę"
+                value={formData.industry}
+                onChange={(value) => handleInputChange('industry', value)}
+                options={["IT", "Finanse", "Edukacja", "Ochrona zdrowia", "Produkcja", "Handel", "Transport", "Budownictwo", "Inne"]}>
+              </DropdownList>
+            </div>
+
+            <div className="space-y-2">
+              <p>Stanowisko</p>
+              <Input
+                id="position"
+                type="text"
+                placeholder="np. Senior Developer"
+                value={formData.position}
+                onChange={(e) => handleInputChange('position', e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <Divider />
+          {/* Optional fields section */}
+          <div className="">
+            <h3 
+              className="text-lg font-semibold mb-4 text-gray-500 cursor-pointer hover:underline hover:text-gray-900 transition-all duration-100"
+              onClick={() => setShowAdvancedData(!showAdvancedData)}
+            >
+              Zaawansowane Dane
+            </h3>
+            {showAdvancedData && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <p>Środki na koncie ZUS (PLN)</p>
+                  <Input
+                    id="zus_account_balance"
+                    type="number"
+                    placeholder="np. 50000"
+                    value={formData.zus_account_balance}
+                    onChange={(e) => handleInputChange('zus_account_balance', e.target.value)}
+                    step={1000}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <p>Środki na subkoncie ZUS (PLN)</p>
+                  <Input
+                    id="zus_subaccount_balance"
+                    type="number"
+                    placeholder="np. 15000"
+                    value={formData.zus_subaccount_balance}
+                    onChange={(e) => handleInputChange('zus_subaccount_balance', e.target.value)}
+                    step={1000}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <p>Dni zwolnień lekarskich rocznie</p>
+                  <Input
+                    id="sick_leave_days_per_year"
+                    type="number"
+                    placeholder="np. 5"
+                    value={formData.sick_leave_days_per_year}
+                    onChange={(e) => handleInputChange('sick_leave_days_per_year', e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col md:flex-row justify-between pt-4 gap-6">
+            <Button 
+            type="secondary" 
+            variant="outline" 
+            onClick={() => navigate('/jaka-chcesz')}
+            customStyle="flex justify-center">
+              Wstecz
+            </Button>
+            <Button 
+            type="primary" 
+            disabled={!isFormValid || isSubmitting} 
+            customStyle="flex justify-center">
+              {isSubmitting ? 'Obliczanie...' : 'Oblicz emeryturę'}
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   )
 }
