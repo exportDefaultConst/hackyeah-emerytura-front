@@ -66,9 +66,6 @@ const AppLayout = () => {
       <div className="min-h-screen flex flex-col">
         <main className="flex-grow max-w-full max-h-full">
           <Outlet />
-          {/* {isUserEstimationVisible && <UserEstimationPage/>} */}
-          {/* <UserFormPage onBack={handleBack}/> */}
-          {/* <DashboardPage/> */}
         </main>
       </div>
       {error && (
@@ -78,8 +75,8 @@ const AppLayout = () => {
 
       {showLogin && <LoginRegister cancel={openLogin} />}
 
-      <FloatingButton onClick={toggleChat} isOpen={showChat} />
-      <FloatingChat isOpen={showChat} onClose={() => setShowChat(false)} />
+      {/* <FloatingButton onClick={toggleChat} isOpen={showChat} /> */}
+      {/* <FloatingChat isOpen={showChat} onClose={() => setShowChat(false)} /> */}
     </>
   );
 };

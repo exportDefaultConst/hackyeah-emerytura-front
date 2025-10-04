@@ -5,6 +5,7 @@ import Account from "./pages/Account";
 import FrontPage from "./pages/FrontPage";
 import UserEstimationPage from "./pages/UserEstimationPage";
 import UserFormPage from "./pages/UserFormPage";
+import DashboardPage from "./pages/DashboardPage";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,11 @@ const router = createBrowserRouter([
         path: "/wprowadz-dane",
         element: <UserFormPage />,
         errorElement: <div>error on path: "/wprowadz-dane"</div>,
+      },
+      {
+        path: "/dashboard",
+        element: <DashboardPage />,
+        errorElement: <div>error on path: "/dashboard"</div>,
       },
     ],
   },

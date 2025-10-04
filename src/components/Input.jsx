@@ -8,8 +8,8 @@ const Input = ({
   onChange,
   customClass,
   step = 1,
-  min = 1000,
-  max = 10000,
+  min = 0,
+  max,
 }) => {
   if (children) throw new Error("'Input' component cannot receive children");
 

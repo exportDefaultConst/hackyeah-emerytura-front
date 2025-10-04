@@ -145,8 +145,8 @@ const Slider = ({
     <div className={`w-full py-3 ${className}`}>
       <div
         ref={sliderRef}
-        className={`relative w-full h-2 bg-slate-200 rounded cursor-pointer outline-none transition-colors focus:ring-2 focus:ring-(--color-zus-green) focus:ring-opacity-50 ${
-          disabled ? "bg-slate-100 cursor-not-allowed opacity-60" : ""
+        className={`relative w-full h-2 bg-slate-200 rounded outline-none transition-colors focus:ring-2 focus:ring-(--color-zus-green) focus:ring-opacity-50 ${
+          disabled ? "bg-slate-100 cursor-not-allowed opacity-60" : "cursor-pointer"
         }`}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
@@ -166,14 +166,14 @@ const Slider = ({
         />
         <div
           ref={thumbRef}
-          className={`absolute top-1/2 w-5 h-5 bg-white border-2 border-(--color-zus-green) rounded-full cursor-grab transform -translate-x-1/2 -translate-y-1/2 shadow-md hover:shadow-lg hover:scale-110 focus:ring-2 focus:ring-(--color-zus-green) focus:ring-opacity-50 ${
+          className={`absolute top-1/2 w-5 h-5 bg-white border-2 border-(--color-zus-green) rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-md hover:shadow-lg hover:scale-110 focus:ring-2 focus:ring-(--color-zus-green) focus:ring-opacity-50 ${
             isDragging
               ? "cursor-grabbing scale-120 shadow-lg ring-2 ring-(--color-zus-green) ring-opacity-30"
               : "transition-all duration-150 ease-out"
           } ${
             disabled
               ? "border-slate-400 cursor-not-allowed bg-slate-50 hover:scale-100 hover:shadow-md"
-              : ""
+              : "cursor-grab"
           }`}
           style={{ left: `${percentage}%` }}
         />

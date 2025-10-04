@@ -1,5 +1,5 @@
 export const APP_NAME = "Lorem ipsum";
-export const API_URL = "http://127.0.0.1:8080";
+export const API_URL = "https://sym.packt.pl";
 export const completelyUnknownError =
   "Całkowicie nieznany błąd, jak to zrobiłxś?? :(";
 
