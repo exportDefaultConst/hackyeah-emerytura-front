@@ -187,7 +187,7 @@ const DashboardPage = () => {
       <Card>
         <div className="space-y-6">
           <div className="text-center space-y-4">
-            <h1 className="text-3xl">Wyniki Symulacji Emerytalnej</h1>
+            <h1 className="text-3xl">Wysokość świadczeń emerytalnych</h1>
             <p className="text-muted-foreground">
               Podsumowanie wyników symulacji emerytalnej na podstawie Twoich
               założeń.
@@ -197,28 +197,28 @@ const DashboardPage = () => {
           {/* GŁÓWNE WNIOSKI */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Karta Wysokość Rzeczywista */}
-            <div className="p-6 bg-green-50 border-l-4 border-green-500 rounded-lg">
+            <div className="p-6 bg-grey-50 border-l-4 border-gray-500 rounded-lg">
               <p className="text-lg font-semibold text-gray-700">
                 Wysokość Rzeczywista (Dziś)
               </p>
-              <p className="text-4xl font-bold text-green-700 mt-2 mb-2">
+              <p className="text-4xl font-bold text-gray-700 mt-2 mb-2">
                 {obecnaEmerytura.toLocaleString("pl-PL")} PLN
               </p>
               <p className="text-sm text-gray-600">
-                Miesięcznie (w cenach bieżących)
+                Miesięcznie (ceny bieżące)
               </p>
             </div>
 
             {/* Karta Wysokość Urealniona */}
-            <div className="p-6 bg-red-50 border-l-4 border-red-500 rounded-lg">
+            <div className="p-6 bg-green-50 border-l-4 border-green-500 rounded-lg">
               <p className="text-lg font-semibold text-gray-700">
-                Wysokość Urealniona (Przyszłość)
+                Wysokość Urealniona (Przysłość)
               </p>
-              <p className="text-4xl font-bold text-red-700 mt-2 mb-2">
+              <p className="text-4xl font-bold text-green-700 mt-2 mb-2">
                 {urealnionaEmerytura.toLocaleString("pl-PL")} PLN
               </p>
               <p className="text-sm text-gray-600">
-                Miesięcznie (po waloryzacji do przyszłych cen)
+                Miesięcznie (po indeksowaniu do przyszłych cen)
               </p>
             </div>
           </div>
@@ -275,11 +275,93 @@ const DashboardPage = () => {
           </div>
         </div>
       </Card>
+
+      {/* PORÓWNANIE OCZEKIWAŃ Z PROGNOZĄ */}
+      {desiredAmount && (
+        <Card>
+          <div
+            className={`p-6 rounded-2xl shadow-xl mb-12 border border-gray-100 ${
+              desiredAmount >= urealnionaEmerytura
+                ? "bg-red-50 border-b-4 border-red-500"
+                : "bg-green-50 border-b-4 border-green-500"
+            }`}
+          >
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Porównanie Oczekiwań z Prognozą
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-4">
+              {/* Twoja Predykcja */}
+              <div className="text-center">
+                <p className="text-lg font-semibold text-gray-600 mb-2">
+                  Twoja predykcja wysokości świadczeń emerytalnych
+                </p>
+                <p
+                  className={`text-4xl font-bold mb-2 ${
+                    desiredAmount >= urealnionaEmerytura
+                      ? "text-red-700"
+                      : "text-green-700"
+                  }`}
+                >
+                  {desiredAmount.toLocaleString("pl-PL")} PLN
+                </p>
+                <p className="text-sm text-gray-500">
+                  Miesięcznie (Twoje oczekiwania)
+                </p>
+              </div>
+
+              {/* Średnie Świadczenie */}
+              <div className="text-center">
+                <p className="text-lg font-semibold text-gray-600 mb-2">
+                  Średnie świadczenie po przejściu na emeryturę
+                </p>
+                <p
+                  className={`text-4xl font-bold mb-2 ${
+                    desiredAmount >= urealnionaEmerytura
+                      ? "text-green-700"
+                      : "text-red-700"
+                  }`}
+                >
+                  {urealnionaEmerytura.toLocaleString("pl-PL")} PLN
+                </p>
+                <p className="text-sm text-gray-500">
+                  Miesięcznie (Prognoza systemu)
+                </p>
+              </div>
+            </div>
+
+            {/* Różnica */}
+            <div className="text-center p-4 bg-white rounded-xl border border-gray-200">
+              <p className="text-lg font-semibold text-gray-700 mb-2">
+                {desiredAmount >= urealnionaEmerytura ? "Niedobór" : "Nadwyżka"}
+              </p>
+              <p
+                className={`text-3xl font-bold ${
+                  desiredAmount >= urealnionaEmerytura
+                    ? "text-red-600"
+                    : "text-green-600"
+                }`}
+              >
+                {Math.abs(
+                  desiredAmount - urealnionaEmerytura
+                ).toLocaleString("pl-PL")}{" "}
+                PLN
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                {desiredAmount >= urealnionaEmerytura
+                  ? "Musisz jeszcze przepracować x lat, aby osiągnąć wysokość świadczeń zgodną z twoimi oczekiwaniami."
+                  : "Twoje oczekiwania są realistyczne"}
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
       <Card>
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-800">
-              Szczegóły Prognozy i Założenia
+              Inne Prognozy i Założenia
             </h2>
           </div>
 
@@ -332,7 +414,7 @@ const DashboardPage = () => {
             <KartaMetryki
               tytul="Inflacja 2025"
               wartosc={inflacja2025}
-              opis="Prognozowana inflacja"
+              opis="Prognozowana inflacja w obecnym roku"
               klasaIkony="text-teal-500"
             />
           </div>
