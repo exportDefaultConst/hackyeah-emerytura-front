@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import Slider from "../components/slider";
+import Slider from "../components/Slider";
 import Divider from "../components/Divider";
 import Input from "../components/Input";
 import { useNavigate } from "react-router";
