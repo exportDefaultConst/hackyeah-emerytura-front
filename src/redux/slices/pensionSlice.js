@@ -42,19 +42,24 @@ const filterValidData = (data) => {
   return Object.keys(filtered).length > 0 ? filtered : null;
 };
 
-export const calculatePension = createAsyncThunk(  "pension/calculatePension",
+export const calculatePension = createAsyncThunk(
+  "pension/calculatePension",
   async (userData, { rejectWithValue, dispatch }) => {
     try {
       // Extract postal_code from userData before sending to API
       const { postal_code, ...apiUserData } = userData;
-      
+      console.log("userData", userData);
+
       const res = await fetch(`${API_URL}/api/calculate_pension`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ user_data: apiUserData }),
+        body: JSON.stringify({
+          user_data: apiUserData,
+          postal_code: postal_code,
+        }),
       });
 
       if (!res.ok) {

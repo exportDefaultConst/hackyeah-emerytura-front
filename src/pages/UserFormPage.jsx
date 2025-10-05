@@ -383,7 +383,7 @@ const UserFormPage = () => {
 
                 <div className="space-y-2">
                   <p>Wykorzystane dni L4 rocznie</p>
-                   <Input
+                  <Input
                     id="sick_leave_days_per_year"
                     type="number"
                     placeholder="np. 5"
@@ -439,20 +439,36 @@ const UserFormPage = () => {
               Kod pocztowy
             </h3>
             <p className="text-gray-600 text-sm">
-              Podaj swój kod pocztowy, aby otrzymać dodatkowe informacje o lokalnych możliwościach oszczędzania na emeryturę.
+              Podaj swój kod pocztowy, aby otrzymać dodatkowe informacje o
+              lokalnych możliwościach oszczędzania na emeryturę.
             </p>
           </div>
-          
+
           <div>
             <Input
               type="text"
               placeholder="np. 00-000"
               value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Remove all non-digit characters
+                const digitsOnly = value.replace(/\D/g, "");
+                // Format as xx-xxx
+                let formatted = digitsOnly;
+                if (digitsOnly.length >= 3) {
+                  formatted =
+                    digitsOnly.slice(0, 2) + "-" + digitsOnly.slice(2, 5);
+                }
+                // Limit to 5 digits total (xx-xxx format)
+                if (digitsOnly.length <= 5) {
+                  setPostalCode(formatted);
+                }
+              }}
               customClass="text-center"
+              maxLength={6} // xx-xxx = 6 characters including dash
             />
           </div>
-          
+
           <div className="flex gap-3">
             <Button
               text="Wyślij"

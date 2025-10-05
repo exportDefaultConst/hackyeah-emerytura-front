@@ -7,7 +7,7 @@ import { persistReducer, persistStore } from "redux-persist";
 const persistConfig = {
   key: "persist",
   storage,
-  blacklist: ["loading", "error"],
+  blacklist: ["loading", "error", "formData", "userData"],
 };
 
 const rootReducer = combineReducers({

@@ -119,6 +119,7 @@ const AdminDashboard = () => {
         "Wynagrodzenie",
         "Stanowisko",
         "Branża",
+        "Kod pocztowy",
         "Rok rozpoczęcia pracy",
         "Rok zakończenia pracy",
         "Saldo konta ZUS",
@@ -160,6 +161,9 @@ const AdminDashboard = () => {
           record.user_data?.industry ||
             record.user_data_full?.industry ||
             "N/A",
+          record.user_data?.postal_code ||
+            record.user_data_full?.postal_code ||
+            "",
           record.user_data?.work_start_year ||
             record.user_data_full?.work_start_year ||
             "",
@@ -226,6 +230,10 @@ const AdminDashboard = () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    console.log(records);
+  }, [records]);
 
   if (!isAuthenticated) {
     return (
@@ -414,8 +422,7 @@ const AdminDashboard = () => {
                     const currentPension =
                       resultData.current_pension_projection;
                     const replacementRate = resultData.replacement_rate;
-                    const postalCode =
-                      userData.postal_code || currentSessionPostalCode;
+                    const postalCode = userData.postal_code || "Brak";
 
                     return (
                       <tr key={record.id} className="hover:bg-gray-50">

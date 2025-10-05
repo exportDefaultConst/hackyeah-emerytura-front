@@ -9,22 +9,39 @@ import Button from "../components/Button";
 import Modal from "../components/Modal";
 import Input from "../components/Input";
 import FAQSection from "../components/FAQSection";
-import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, pdf, Font } from '@react-pdf/renderer';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { RETIREMENT_AVG_PAY_IN_YEAR } from '../constants';
-
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  PDFDownloadLink,
+  pdf,
+  Font,
+} from "@react-pdf/renderer";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { RETIREMENT_AVG_PAY_IN_YEAR } from "../constants";
 
 // Register fonts for Polish character support
 Font.register({
-  family: 'Roboto',
+  family: "Roboto",
   fonts: [
     {
-      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf',
-      fontWeight: 'normal',
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf",
+      fontWeight: "normal",
     },
     {
-      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf',
-      fontWeight: 'bold',
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf",
+      fontWeight: "bold",
     },
   ],
 });
@@ -97,10 +114,12 @@ const KartaMetryki = ({
 
 // Komponent wykresu prognozy
 const PensionProjectionChart = () => {
-  const chartData = Object.entries(RETIREMENT_AVG_PAY_IN_YEAR).map(([year, values]) => ({
-    year: parseInt(year),
-    ...values
-  }));
+  const chartData = Object.entries(RETIREMENT_AVG_PAY_IN_YEAR).map(
+    ([year, values]) => ({
+      year: parseInt(year),
+      ...values,
+    })
+  );
 
   const formatYAxis = (value) => {
     return `${(value / 1000).toFixed(0)}k`;
@@ -113,53 +132,53 @@ const PensionProjectionChart = () => {
   return (
     <div className="w-full">
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <LineChart
+          data={chartData}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis 
-            dataKey="year" 
+          <XAxis
+            dataKey="year"
             ticks={[2030, 2040, 2050, 2060, 2070, 2080]}
             domain={[2023, 2080]}
             stroke="#666"
-            style={{ fontSize: '12px' }}
+            style={{ fontSize: "12px" }}
           />
-          <YAxis 
+          <YAxis
             tickFormatter={formatYAxis}
             stroke="#666"
-            style={{ fontSize: '12px' }}
+            style={{ fontSize: "12px" }}
           />
-          <Tooltip 
+          <Tooltip
             formatter={formatTooltip}
-            contentStyle={{ 
-              backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '10px'
+            contentStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              padding: "10px",
             }}
           />
-          <Legend 
-            wrapperStyle={{ paddingTop: '20px' }}
-            iconType="line"
-          />
-          <Line 
-            type="monotone" 
-            dataKey="wariant1" 
-            stroke="#3b82f6" 
+          <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="line" />
+          <Line
+            type="monotone"
+            dataKey="wariant1"
+            stroke="#3b82f6"
             strokeWidth={2.5}
             dot={false}
             name="Wariant Realistyczny"
           />
-          <Line 
-            type="monotone" 
-            dataKey="wariant2" 
-            stroke="#ef4444" 
+          <Line
+            type="monotone"
+            dataKey="wariant2"
+            stroke="#ef4444"
             strokeWidth={2.5}
             dot={false}
             name="Wariant Pesymistyczny"
           />
-          <Line 
-            type="monotone" 
-            dataKey="wariant3" 
-            stroke="#10b981" 
+          <Line
+            type="monotone"
+            dataKey="wariant3"
+            stroke="#10b981"
             strokeWidth={2.5}
             dot={false}
             name="Wariant Optymistyczny"
@@ -171,21 +190,27 @@ const PensionProjectionChart = () => {
         <div className="bg-blue-50 p-4 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-1 bg-blue-500"></div>
-            <span className="font-semibold text-blue-900">Wariant Realistyczny</span>
+            <span className="font-semibold text-blue-900">
+              Wariant Realistyczny
+            </span>
           </div>
           <p className="text-gray-700">2023: 23 308 zł → 2080: 38 739 zł</p>
         </div>
         <div className="bg-red-50 p-4 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-1 bg-red-500"></div>
-            <span className="font-semibold text-red-900">Wariant Pesymistyczny</span>
+            <span className="font-semibold text-red-900">
+              Wariant Pesymistyczny
+            </span>
           </div>
           <p className="text-gray-700">2023: 23 380 zł → 2080: 30 064 zł</p>
         </div>
         <div className="bg-green-50 p-4 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-1 bg-green-500"></div>
-            <span className="font-semibold text-green-900">Wariant Optymistyczny</span>
+            <span className="font-semibold text-green-900">
+              Wariant Optymistyczny
+            </span>
           </div>
           <p className="text-gray-700">2023: 23 272 zł → 2080: 50 064 zł</p>
         </div>
@@ -197,146 +222,146 @@ const PensionProjectionChart = () => {
 const PensionReportPDF = ({ data, faqData = null }) => {
   const styles = StyleSheet.create({
     page: {
-      flexDirection: 'column',
-      backgroundColor: '#FFFFFF',
+      flexDirection: "column",
+      backgroundColor: "#FFFFFF",
       padding: 30,
       fontSize: 10,
-      fontFamily: 'Roboto',
+      fontFamily: "Roboto",
     },
     title: {
       fontSize: 18,
       marginBottom: 20,
-      textAlign: 'center',
-      fontWeight: 'bold',
-      color: '#1a365d',
+      textAlign: "center",
+      fontWeight: "bold",
+      color: "#1a365d",
     },
     subtitle: {
       fontSize: 14,
       marginBottom: 15,
-      fontWeight: 'bold',
-      color: '#2d3748',
+      fontWeight: "bold",
+      color: "#2d3748",
     },
     section: {
       marginBottom: 20,
       padding: 15,
-      backgroundColor: '#f7fafc',
+      backgroundColor: "#f7fafc",
       borderRadius: 5,
     },
     row: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      justifyContent: "space-between",
       marginBottom: 8,
       paddingVertical: 4,
     },
     label: {
-      fontWeight: 'bold',
+      fontWeight: "bold",
       flex: 1,
     },
     value: {
       flex: 1,
-      textAlign: 'right',
-      color: '#2d3748',
+      textAlign: "right",
+      color: "#2d3748",
     },
     grid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "space-between",
     },
     gridItem: {
-      width: '48%',
+      width: "48%",
       marginBottom: 10,
       padding: 10,
-      backgroundColor: '#edf2f7',
+      backgroundColor: "#edf2f7",
       borderRadius: 3,
     },
     gridLabel: {
       fontSize: 8,
-      textTransform: 'uppercase',
-      color: '#718096',
+      textTransform: "uppercase",
+      color: "#718096",
       marginBottom: 4,
     },
     gridValue: {
       fontSize: 12,
-      fontWeight: 'bold',
-      color: '#1a202c',
+      fontWeight: "bold",
+      color: "#1a202c",
       marginBottom: 2,
     },
     gridDescription: {
       fontSize: 8,
-      color: '#4a5568',
+      color: "#4a5568",
     },
     highlight: {
-      backgroundColor: '#e6fffa',
+      backgroundColor: "#e6fffa",
       padding: 15,
       borderRadius: 5,
       marginBottom: 15,
-      borderLeft: '3px solid #38b2ac',
+      borderLeft: "3px solid #38b2ac",
     },
     highlightTitle: {
       fontSize: 12,
-      fontWeight: 'bold',
-      color: '#234e52',
+      fontWeight: "bold",
+      color: "#234e52",
       marginBottom: 8,
     },
     highlightText: {
       fontSize: 10,
-      color: '#285e61',
+      color: "#285e61",
       lineHeight: 1.4,
     },
     footer: {
-      position: 'absolute',
+      position: "absolute",
       bottom: 30,
       left: 30,
       right: 30,
-      textAlign: 'center',
+      textAlign: "center",
       fontSize: 8,
-      color: '#718096',
-      borderTop: '1px solid #e2e8f0',
+      color: "#718096",
+      borderTop: "1px solid #e2e8f0",
       paddingTop: 10,
     },
     pageNumber: {
-      position: 'absolute',
+      position: "absolute",
       fontSize: 8,
       bottom: 10,
       left: 0,
       right: 0,
-      textAlign: 'center',
-      color: '#718096',
+      textAlign: "center",
+      color: "#718096",
     },
     faqSection: {
       marginBottom: 20,
       padding: 15,
-      backgroundColor: '#f0f9ff',
+      backgroundColor: "#f0f9ff",
       borderRadius: 5,
-      borderLeft: '3px solid #0ea5e9',
+      borderLeft: "3px solid #0ea5e9",
     },
     faqTitle: {
       fontSize: 14,
-      fontWeight: 'bold',
-      color: '#0c4a6e',
+      fontWeight: "bold",
+      color: "#0c4a6e",
       marginBottom: 12,
     },
     faqItem: {
       marginBottom: 12,
       padding: 10,
-      backgroundColor: '#ffffff',
+      backgroundColor: "#ffffff",
       borderRadius: 3,
-      borderLeft: '2px solid #e0e7ff',
+      borderLeft: "2px solid #e0e7ff",
     },
     faqQuestion: {
       fontSize: 10,
-      fontWeight: 'bold',
-      color: '#1e40af',
+      fontWeight: "bold",
+      color: "#1e40af",
       marginBottom: 4,
     },
     faqAnswer: {
       fontSize: 9,
-      color: '#374151',
+      color: "#374151",
       lineHeight: 1.4,
     },
     faqRelevance: {
       fontSize: 8,
-      color: '#6b7280',
+      color: "#6b7280",
       marginBottom: 3,
     },
   });
@@ -355,15 +380,23 @@ const PensionReportPDF = ({ data, faqData = null }) => {
     dodatkoweLata,
     dlugoscZycia,
     desiredAmount,
-    procentStopy
+    procentStopy,
   } = data;
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <Text style={styles.title}>Raport Świadczeń Emerytalnych</Text>
-        <Text style={{ textAlign: 'center', marginBottom: 30, fontSize: 10, color: '#718096' }}>
-          Wygenerowano: {new Date().toLocaleDateString('pl-PL')} {new Date().toLocaleTimeString('pl-PL')}
+        <Text
+          style={{
+            textAlign: "center",
+            marginBottom: 30,
+            fontSize: 10,
+            color: "#718096",
+          }}
+        >
+          Wygenerowano: {new Date().toLocaleDateString("pl-PL")}{" "}
+          {new Date().toLocaleTimeString("pl-PL")}
         </Text>
 
         {/* Główne wyniki */}
@@ -371,23 +404,29 @@ const PensionReportPDF = ({ data, faqData = null }) => {
           <Text style={styles.subtitle}>Wysokość Świadczeń Emerytalnych</Text>
           <View style={styles.row}>
             <Text style={styles.label}>Wysokość Rzeczywista (Dziś):</Text>
-            <Text style={styles.value}>{obecnaEmerytura.toLocaleString('pl-PL')} PLN</Text>
+            <Text style={styles.value}>
+              {obecnaEmerytura.toLocaleString("pl-PL")} PLN
+            </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Wysokość Urealniona (Przyszłość):</Text>
-            <Text style={styles.value}>{urealnionaEmerytura.toLocaleString('pl-PL')} PLN</Text>
+            <Text style={styles.value}>
+              {urealnionaEmerytura.toLocaleString("pl-PL")} PLN
+            </Text>
           </View>
         </View>
 
         {/* Stopa zastąpienia */}
         <View style={styles.highlight}>
-          <Text style={styles.highlightTitle}>Stopa Zastąpienia: {stopaZastapieniaa}%</Text>
+          <Text style={styles.highlightTitle}>
+            Stopa Zastąpienia: {stopaZastapieniaa}%
+          </Text>
           <Text style={styles.highlightText}>
-            Twoja prognozowana emerytura pokryje {procentStopy}% obecnego wynagrodzenia brutto.
-            {stopaZastapieniaa < 100 
+            Twoja prognozowana emerytura pokryje {procentStopy}% obecnego
+            wynagrodzenia brutto.
+            {stopaZastapieniaa < 100
               ? ` Oznacza to, że aby utrzymać obecny standard życia, musisz oszczędzać dodatkowo.`
-              : ` Oznacza to, że NIE musisz oszczędzać dodatkowo.`
-            }
+              : ` Oznacza to, że NIE musisz oszczędzać dodatkowo.`}
           </Text>
         </View>
 
@@ -397,26 +436,39 @@ const PensionReportPDF = ({ data, faqData = null }) => {
             <Text style={styles.subtitle}>Porównanie Oczekiwań z Prognozą</Text>
             <View style={styles.row}>
               <Text style={styles.label}>Twoja predykcja:</Text>
-              <Text style={styles.value}>{desiredAmount.toLocaleString('pl-PL')} PLN</Text>
+              <Text style={styles.value}>
+                {desiredAmount.toLocaleString("pl-PL")} PLN
+              </Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Prognoza systemu:</Text>
-              <Text style={styles.value}>{urealnionaEmerytura.toLocaleString('pl-PL')} PLN</Text>
+              <Text style={styles.value}>
+                {urealnionaEmerytura.toLocaleString("pl-PL")} PLN
+              </Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>
-                {desiredAmount >= urealnionaEmerytura ? 'Niedobór:' : 'Nadwyżka:'}
+                {desiredAmount >= urealnionaEmerytura
+                  ? "Niedobór:"
+                  : "Nadwyżka:"}
               </Text>
               <Text style={styles.value}>
-                {Math.abs(desiredAmount - urealnionaEmerytura).toLocaleString('pl-PL')} PLN
+                {Math.abs(desiredAmount - urealnionaEmerytura).toLocaleString(
+                  "pl-PL"
+                )}{" "}
+                PLN
               </Text>
             </View>
           </View>
         )}
 
-        <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-          `Strona ${pageNumber} z ${totalPages}`
-        )} fixed />
+        <Text
+          style={styles.pageNumber}
+          render={({ pageNumber, totalPages }) =>
+            `Strona ${pageNumber} z ${totalPages}`
+          }
+          fixed
+        />
       </Page>
 
       <Page size="A4" style={styles.page}>
@@ -428,23 +480,31 @@ const PensionReportPDF = ({ data, faqData = null }) => {
           <View style={styles.grid}>
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Obecne Wynagrodzenie</Text>
-              <Text style={styles.gridValue}>{obecneWynagrodzenie.toLocaleString('pl-PL')} PLN</Text>
+              <Text style={styles.gridValue}>
+                {obecneWynagrodzenie.toLocaleString("pl-PL")} PLN
+              </Text>
               <Text style={styles.gridDescription}>Miesięcznie brutto</Text>
             </View>
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Stopa Składkowa</Text>
               <Text style={styles.gridValue}>{stopaSkladkowa}</Text>
-              <Text style={styles.gridDescription}>Tylko ze składek emerytalnych</Text>
+              <Text style={styles.gridDescription}>
+                Tylko ze składek emerytalnych
+              </Text>
             </View>
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Szacowane Składki Łącznie</Text>
-              <Text style={styles.gridValue}>{laczneSkładki.toLocaleString('pl-PL')} PLN</Text>
+              <Text style={styles.gridValue}>
+                {laczneSkładki.toLocaleString("pl-PL")} PLN
+              </Text>
               <Text style={styles.gridDescription}>Przez cały okres pracy</Text>
             </View>
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Stopa Waloryzacji</Text>
               <Text style={styles.gridValue}>{stopaWaloryzacji}</Text>
-              <Text style={styles.gridDescription}>Średnio rocznie (NBP 2025-2029)</Text>
+              <Text style={styles.gridDescription}>
+                Średnio rocznie (NBP 2025-2029)
+              </Text>
             </View>
           </View>
         </View>
@@ -461,7 +521,9 @@ const PensionReportPDF = ({ data, faqData = null }) => {
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Dodatkowe Lata Pracy</Text>
               <Text style={styles.gridValue}>{dodatkoweLata} lat</Text>
-              <Text style={styles.gridDescription}>Do osiągnięcia wieku emerytalnego</Text>
+              <Text style={styles.gridDescription}>
+                Do osiągnięcia wieku emerytalnego
+              </Text>
             </View>
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Przewidywana Długość Życia</Text>
@@ -471,7 +533,9 @@ const PensionReportPDF = ({ data, faqData = null }) => {
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Inflacja 2025</Text>
               <Text style={styles.gridValue}>{inflacja2025}</Text>
-              <Text style={styles.gridDescription}>Prognozowana inflacja w obecnym roku</Text>
+              <Text style={styles.gridDescription}>
+                Prognozowana inflacja w obecnym roku
+              </Text>
             </View>
           </View>
         </View>
@@ -482,51 +546,62 @@ const PensionReportPDF = ({ data, faqData = null }) => {
             Co dalej? Brakuje Ci {Math.round(100 - procentStopy)}%
           </Text>
           <Text style={styles.highlightText}>
-            {stopaZastapieniaa < 100 
+            {stopaZastapieniaa < 100
               ? `Stopa zastąpienia ${stopaZastapieniaa}% oznacza, że aby utrzymać obecny standard życia, musisz rozważyć dodatkowe oszczędności emerytalne lub przedłużenie okresu pracy.`
-              : `Stopa zastąpienia ${stopaZastapieniaa}% oznacza, że emerytura z systemu publicznego będzie wystarczająca do utrzymania obecnego standardu życia.`
-            }
+              : `Stopa zastąpienia ${stopaZastapieniaa}% oznacza, że emerytura z systemu publicznego będzie wystarczająca do utrzymania obecnego standardu życia.`}
           </Text>
         </View>
 
         <View style={styles.footer}>
           <Text>
-            Raport wygenerowany na podstawie danych z ZUS • System obliczeń emerytalnych
+            Raport wygenerowany na podstawie danych z ZUS • System obliczeń
+            emerytalnych
           </Text>
           <Text style={{ marginTop: 5 }}>
             Dokument ma charakter informacyjny i nie stanowi wiążącej prognozy
           </Text>
         </View>
 
-        <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-          `Strona ${pageNumber} z ${totalPages}`
-        )} fixed />
+        <Text
+          style={styles.pageNumber}
+          render={({ pageNumber, totalPages }) =>
+            `Strona ${pageNumber} z ${totalPages}`
+          }
+          fixed
+        />
       </Page>
 
       {/* New FAQ Page */}
       {faqData && faqData.faq && faqData.faq.length > 0 && (
         <Page size="A4" style={styles.page}>
           <Text style={styles.title}>Spersonalizowane FAQ</Text>
-          <Text style={{ textAlign: 'center', marginBottom: 20, fontSize: 10, color: '#718096' }}>
+          <Text
+            style={{
+              textAlign: "center",
+              marginBottom: 20,
+              fontSize: 10,
+              color: "#718096",
+            }}
+          >
             Najczęściej zadawane pytania dostosowane do Twojej sytuacji
           </Text>
 
           <View style={styles.faqSection}>
             <Text style={styles.faqTitle}>Pytania i odpowiedzi</Text>
-            
+
             {faqData.faq.slice(0, 8).map((item, index) => (
               <View key={index} style={styles.faqItem}>
                 <Text style={styles.faqRelevance}>
-                  {item.relevance === 'high' ? 'Wysoka ważność' : 
-                  item.relevance === 'medium' ? 'Średnia ważność' : 
-                  'Niska ważność'}
+                  {item.relevance === "high"
+                    ? "Wysoka ważność"
+                    : item.relevance === "medium"
+                    ? "Średnia ważność"
+                    : "Niska ważność"}
                 </Text>
                 <Text style={styles.faqQuestion}>
                   {index + 1}. {item.question}
                 </Text>
-                <Text style={styles.faqAnswer}>
-                  {item.answer}
-                </Text>
+                <Text style={styles.faqAnswer}>{item.answer}</Text>
               </View>
             ))}
           </View>
@@ -537,9 +612,13 @@ const PensionReportPDF = ({ data, faqData = null }) => {
             </Text>
           </View>
 
-          <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-            `Strona ${pageNumber} z ${totalPages}`
-          )} fixed />
+          <Text
+            style={styles.pageNumber}
+            render={({ pageNumber, totalPages }) =>
+              `Strona ${pageNumber} z ${totalPages}`
+            }
+            fixed
+          />
         </Page>
       )}
     </Document>
@@ -557,6 +636,8 @@ const DashboardPage = () => {
   const [localError, setLocalError] = useState(null);
   // State to store FAQ data for PDF generation
   const [faqDataForPDF, setFaqDataForPDF] = useState(null);
+  // State for savings plans modal
+  const [showSavingsModal, setShowSavingsModal] = useState(false);
 
   // Funkcja do pobierania danych emerytalnych z API
   const fetchPensionData = async () => {
@@ -626,7 +707,12 @@ const DashboardPage = () => {
   // Wyciągnij dane z fallbackami
   const obecnaEmerytura = pensionData?.current_pension_projection || 4642;
   const urealnionaEmerytura = pensionData?.indexed_pension_projection || 6840;
-  const stopaZastapieniaa = Math.round(pensionData?.indexed_pension_projection / pensionData?.metadata?.current_salary * 10000) / 100 || 41.2;
+  const stopaZastapieniaa =
+    Math.round(
+      (pensionData?.indexed_pension_projection /
+        pensionData?.metadata?.current_salary) *
+        10000
+    ) / 100 || 41.2;
   const stopaSkladkowa =
     pensionData?.calculation_details?.contribution_rate || "19.52%";
   const obecneWynagrodzenie = pensionData?.metadata?.current_salary || 8000;
@@ -636,14 +722,21 @@ const DashboardPage = () => {
   const inflacja2025 = "3.7%";
   const wiekUzytkownika = pensionData?.metadata?.user_age || 52;
   const plecUzytkownika = pensionData?.metadata?.user_gender || "female";
-  const dodatkoweLata = pensionData?.metadata?.user_gender === "female" ? 60 - pensionData?.metadata?.user_age : 65 - pensionData?.metadata?.user_age|| 8;
+  const dodatkoweLata =
+    pensionData?.metadata?.user_gender === "female"
+      ? 60 - pensionData?.metadata?.user_age
+      : 65 - pensionData?.metadata?.user_age || 8;
   const dlugoscZycia = pensionData?.calculation_details?.life_expectancy_months
     ? `${Math.round(
-        pensionData.calculation_details.life_expectancy_months / 12 + (pensionData?.metadata?.user_gender === "female" ? 60 : 65) 
+        pensionData.calculation_details.life_expectancy_months / 12 +
+          (pensionData?.metadata?.user_gender === "female" ? 60 : 65)
       )} lat`
     : "21 lat";
-  const dlugoscZyciaDesc = (`${pensionData.calculation_details.life_expectancy_months + (pensionData?.metadata?.user_gender === "female" ? 60 : 65) * 12
-  } miesięcy`) || "254.3 miesięcy"
+  const dlugoscZyciaDesc =
+    `${
+      pensionData.calculation_details.life_expectancy_months +
+      (pensionData?.metadata?.user_gender === "female" ? 60 : 65) * 12
+    } miesięcy` || "254.3 miesięcy";
 
   // Oblicz procent dla paska postępu (Stopa Zastąpienia)
   const procentStopy = Math.round(stopaZastapieniaa);
@@ -673,14 +766,18 @@ const DashboardPage = () => {
       dodatkoweLata,
       dlugoscZycia,
       desiredAmount,
-      procentStopy
+      procentStopy,
     };
 
-    const blob = await pdf(<PensionReportPDF data={pdfData} faqData={faqDataForPDF} />).toBlob();
+    const blob = await pdf(
+      <PensionReportPDF data={pdfData} faqData={faqDataForPDF} />
+    ).toBlob();
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `raport-emerytalny-${new Date().toISOString().split('T')[0]}.pdf`;
+    link.download = `raport-emerytalny-${
+      new Date().toISOString().split("T")[0]
+    }.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -707,20 +804,18 @@ const DashboardPage = () => {
                 Wysokość Rzeczywista (Dziś)
               </p>
               <p className="text-4xl font-bold text-gray-700 mt-2 mb-2">
-                {obecnaEmerytura.toLocaleString("pl-PL")} PLN
+                {urealnionaEmerytura.toLocaleString("pl-PL")} PLN
               </p>
-              <p className="text-sm text-gray-600">
-                Miesięcznie Brutto
-              </p>
+              <p className="text-sm text-gray-600">Miesięcznie Brutto</p>
             </div>
 
             {/* Karta Wysokość Urealniona */}
             <div className="p-6 bg-red-50 border-l-4 border-red-500 rounded-lg">
               <p className="text-lg font-semibold text-red-700">
-                Wysokość Urealniona (Przysłość)
+                Wysokość Urealniona (Przyszłość)
               </p>
               <p className="text-4xl font-bold text-gray-700 mt-2 mb-2">
-                {urealnionaEmerytura.toLocaleString("pl-PL")} PLN
+                {obecnaEmerytura.toLocaleString("pl-PL")} PLN
               </p>
               <p className="text-sm text-gray-600">
                 Miesięcznie (po inteligentnej analizie i indeksowaniu)
@@ -748,7 +843,8 @@ const DashboardPage = () => {
               {stopaZastapieniaa}%
             </p>
             <p className="text-gray-600 mt-2">
-              Twoja prognozowana emerytura pokrywa {procentStopy}% obecnego przychodu
+              Twoja prognozowana emerytura pokrywa {procentStopy}% obecnego
+              przychodu
             </p>
           </div>
 
@@ -846,9 +942,9 @@ const DashboardPage = () => {
                     : "text-green-600"
                 }`}
               >
-                {Math.abs(
-                  desiredAmount - urealnionaEmerytura
-                ).toLocaleString("pl-PL")}{" "}
+                {Math.abs(desiredAmount - urealnionaEmerytura).toLocaleString(
+                  "pl-PL"
+                )}{" "}
                 PLN
               </p>
               <p className="text-sm text-gray-500 mt-1">
@@ -868,7 +964,8 @@ const DashboardPage = () => {
               Prognoza średnich świadczeń emerytalnych
             </h2>
             <p className="text-gray-600 mt-2">
-              Prognoza wysokości świadczeń emerytalnych - trzy warianty rozwoju sytuacji (2023-2080) indeksowane inflacją
+              Prognoza wysokości świadczeń emerytalnych - trzy warianty rozwoju
+              sytuacji (2023-2080) indeksowane inflacją
             </p>
           </div>
           <PensionProjectionChart />
@@ -926,7 +1023,7 @@ const DashboardPage = () => {
             <KartaMetryki
               tytul="Przewidywana Długość Życia"
               wartosc={dlugoscZycia}
-              opis={dlugoscZycia} 
+              opis={dlugoscZycia}
               klasaIkony="text-pink-500"
             />
             <KartaMetryki
@@ -951,18 +1048,18 @@ const DashboardPage = () => {
             </p>
           </div>
 
-          <FAQSection 
+          <FAQSection
             userData={{
               age: wiekUzytkownika,
               gender: plecUzytkownika,
               salary: obecneWynagrodzenie,
               industry: pensionData?.metadata?.industry || "IT",
-              position: pensionData?.metadata?.position || "Developer"
+              position: pensionData?.metadata?.position || "Developer",
             }}
             calculationResult={{
               monthly_pension: urealnionaEmerytura,
               replacement_rate: stopaZastapieniaa,
-              years_to_work_longer: dodatkoweLata
+              years_to_work_longer: dodatkoweLata,
             }}
             onFaqDataChange={setFaqDataForPDF}
           />
@@ -994,11 +1091,11 @@ const DashboardPage = () => {
                 text="Zmień założenia"
                 onClick={() => navigate("/wprowadz-dane")}
               />
-              <Button text="Zobacz plany oszczędnościowe" />
               <Button
-                text="Drukuj"
-                onClick={generatePDF}
+                text="Zobacz plany oszczędnościowe"
+                onClick={() => setShowSavingsModal(true)}
               />
+              <Button text="Drukuj" onClick={generatePDF} />
             </div>
           </div>
 
@@ -1031,6 +1128,117 @@ const DashboardPage = () => {
           </div>
         </div>
       </Card>
+
+      {/* Savings Plans Modal */}
+      {showSavingsModal && (
+        <Modal
+          isOpen={showSavingsModal}
+          onClose={() => setShowSavingsModal(false)}
+          title="Plany Oszczędnościowe"
+          className="w-96 md:w-144"
+        >
+          <div className="space-y-6">
+            <p className="text-gray-600 mb-4">
+              Sprawdź dodatkowe opcje oszczędzania na emeryturę:
+            </p>
+
+            <div className="space-y-4">
+              <div className="p-4 border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
+                <h3 className="font-semibold text-lg mb-2">Subkonto w ZUS</h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  Ogólne zasady dziedziczenia środków zgromadzonych w ZUS
+                </p>
+                <a
+                  href="https://www.zus.pl/-/subkonto-w-zus-ogolne-zasady-dziedziczenia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-green-600 hover:text-green-700 font-medium"
+                >
+                  Dowiedz się więcej
+                  <svg
+                    className="w-4 h-4 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+              </div>
+
+              <div className="p-4 border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
+                <h3 className="font-semibold text-lg mb-2">PZU PPE</h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  Pracowniczy Program Emerytalny dla pracowników
+                </p>
+                <a
+                  href="https://in.pzu.pl/klienci-indywidualni/ppe-dla-pracownika"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-green-600 hover:text-green-700 font-medium"
+                >
+                  Dowiedz się więcej
+                  <svg
+                    className="w-4 h-4 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+              </div>
+
+              <div className="p-4 border border-gray-200 rounded-lg hover:border-green-500 transition-colors">
+                <h3 className="font-semibold text-lg mb-2">Moje PPK</h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  Pracownicze Plany Kapitałowe - dodatkowe oszczędności
+                  emerytalne
+                </p>
+                <a
+                  href="https://www.mojeppk.pl/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-green-600 hover:text-green-700 font-medium"
+                >
+                  Dowiedz się więcej
+                  <svg
+                    className="w-4 h-4 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Uwaga:</strong> Te linki prowadzą do zewnętrznych stron
+                internetowych. Zachęcamy do skonsultowania się z doradcą
+                finansowym przed podjęciem decyzji inwestycyjnych.
+              </p>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

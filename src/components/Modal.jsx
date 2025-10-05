@@ -7,6 +7,7 @@ const Modal = ({
   className = "w-64",
   blockScroll = true,
   isOnTop = false,
+  additionalStyle = "",
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
