@@ -1,3 +1,6 @@
+# Panel administratora
+https://sym.packt.pl/admin-dashboard
+
 # 🚀🎉 HackYeah 2025 🦸‍♂️🦸‍♀️
 
 🌟 _Welcome to the **HackYeah 2025** hackathon!_ 🌟
