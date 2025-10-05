@@ -350,7 +350,7 @@ const PensionReportPDF = ({ data }) => {
 
         <View style={styles.footer}>
           <Text>
-            Raport wygenerowany na podstawie danych ZUS • System obliczeń emerytalnych
+            Raport wygenerowany na podstawie danych z ZUS • System obliczeń emerytalnych
           </Text>
           <Text style={{ marginTop: 5 }}>
             Dokument ma charakter informacyjny i nie stanowi wiążącej prognozy
@@ -443,7 +443,7 @@ const DashboardPage = () => {
   // Wyciągnij dane z fallbackami
   const obecnaEmerytura = pensionData?.current_pension_projection || 4642;
   const urealnionaEmerytura = pensionData?.indexed_pension_projection || 6840;
-  const stopaZastapieniaa = pensionData?.replacement_rate || 41.2;
+  const stopaZastapieniaa = Math.round(pensionData?.indexed_pension_projection / pensionData?.metadata?.current_salary * 10000) / 100 || 41.2;
   const stopaSkladkowa =
     pensionData?.calculation_details?.contribution_rate || "19.52%";
   const obecneWynagrodzenie = pensionData?.metadata?.current_salary || 8000;
@@ -453,7 +453,7 @@ const DashboardPage = () => {
   const inflacja2025 = "3.7%";
   const wiekUzytkownika = pensionData?.metadata?.user_age || 52;
   const plecUzytkownika = pensionData?.metadata?.user_gender || "female";
-  const dodatkoweLata = pensionData?.years_to_work_longer || 8;
+  const dodatkoweLata = pensionData?.metadata?.user_gender === "female" ? 60 - pensionData?.metadata?.user_age + 18 : 65 - pensionData?.metadata?.user_age  + 18|| 8;
   const dlugoscZycia = pensionData?.calculation_details?.life_expectancy_months
     ? `${Math.round(
         pensionData.calculation_details.life_expectancy_months / 12
@@ -519,28 +519,28 @@ const DashboardPage = () => {
           {/* GŁÓWNE WNIOSKI */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Karta Wysokość Rzeczywista */}
-            <div className="p-6 bg-grey-50 border-l-4 border-gray-500 rounded-lg">
-              <p className="text-lg font-semibold text-gray-700">
+            <div className="p-6 bg-green-50 border-l-4 border-green-500 rounded-lg">
+              <p className="text-lg font-semibold text-green-700">
                 Wysokość Rzeczywista (Dziś)
               </p>
               <p className="text-4xl font-bold text-gray-700 mt-2 mb-2">
                 {obecnaEmerytura.toLocaleString("pl-PL")} PLN
               </p>
               <p className="text-sm text-gray-600">
-                Miesięcznie (ceny bieżące)
+                Miesięcznie Brutto
               </p>
             </div>
 
             {/* Karta Wysokość Urealniona */}
-            <div className="p-6 bg-green-50 border-l-4 border-green-500 rounded-lg">
-              <p className="text-lg font-semibold text-gray-700">
+            <div className="p-6 bg-red-50 border-l-4 border-red-500 rounded-lg">
+              <p className="text-lg font-semibold text-red-700">
                 Wysokość Urealniona (Przysłość)
               </p>
-              <p className="text-4xl font-bold text-green-700 mt-2 mb-2">
+              <p className="text-4xl font-bold text-gray-700 mt-2 mb-2">
                 {urealnionaEmerytura.toLocaleString("pl-PL")} PLN
               </p>
               <p className="text-sm text-gray-600">
-                Miesięcznie (po indeksowaniu do przyszłych cen)
+                Miesięcznie (po inteligentnej analizie i indeksowaniu)
               </p>
             </div>
           </div>
@@ -565,8 +565,7 @@ const DashboardPage = () => {
               {stopaZastapieniaa}%
             </p>
             <p className="text-gray-600 mt-2">
-              Twoja prognozowana emerytura pokryje {procentStopy}% obecnego
-              wynagrodzenia brutto
+              Twoja prognozowana emerytura pokrywa {procentStopy}% obecnego przychodu
             </p>
           </div>
 

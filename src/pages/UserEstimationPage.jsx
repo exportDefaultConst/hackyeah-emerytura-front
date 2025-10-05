@@ -69,7 +69,7 @@ export function UserEstimationPage({}) {
   const createChartData = () => {
     const userBar = {
       id: "user-bar", // Stable ID for smooth animations
-      name: "Twoja wybrana",
+      name: "Twój wybór",
       amount: desiredAmount,
       isUser: true,
     };
@@ -152,7 +152,7 @@ export function UserEstimationPage({}) {
                       animationDuration={isSliderDragging ? 0 : 100}
                       angle={-45}
                       textAnchor="end"
-                      height={100}
+                      height={80}
                       interval={0}
                     />
                     <YAxis

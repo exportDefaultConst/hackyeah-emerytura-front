@@ -15,6 +15,29 @@ html {
   --color-zus-white: #FFFFFF;
 }
 
+/* Dropdown select styling */
+select {
+  font-family: "Nunito", sans-serif !important;
+  font-size: inherit !important;
+}
+
+select option {
+  font-family: "Nunito", sans-serif !important;
+  font-size: inherit !important;
+  background-color: white !important;
+  color: #374151 !important;
+  padding: 8px 12px !important;
+}
+
+select option:checked {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+select option:hover {
+  background-color: #f9fafb !important;
+}
+
 .color-zus-yellow {
   color: var(--color-zus-yellow);
 }
