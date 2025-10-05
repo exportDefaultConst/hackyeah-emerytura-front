@@ -89,18 +89,18 @@ const FAQSection = ({ userData, calculationResult, onFaqDataChange }) => {
 
   const getRelevanceIcon = (relevance) => {
     switch (relevance) {
-      case "high": return "🔴";
+      case "high": return "🟢";
       case "medium": return "🟡";
-      case "low": return "🟢";
+      case "low": return "🔴";
       default: return "💡";
     }
   };
 
   const getRelevanceText = (relevance) => {
     switch (relevance) {
-      case "high": return "Wysoka ważność";
-      case "medium": return "Średnia ważność";
-      case "low": return "Niska ważność";
+      case "high": return "Istotna kwestia";
+      case "medium": return "Umiarkowany wpływ";
+      case "low": return "Mniejsze znaczenie";
       default: return "Informacyjne";
     }
   };
@@ -185,7 +185,7 @@ const FAQSection = ({ userData, calculationResult, onFaqDataChange }) => {
         ))}
       </div>
 
-      <div className="text-center pt-4">
+      {/* <div className="text-center pt-4">
         <Button
           text="Wygeneruj nowe FAQ"
           onClick={generateFAQ}
@@ -193,7 +193,7 @@ const FAQSection = ({ userData, calculationResult, onFaqDataChange }) => {
           type="secondary"
           customStyle="text-sm"
         />
-      </div>
+      </div> */}
     </div>
   );
 };

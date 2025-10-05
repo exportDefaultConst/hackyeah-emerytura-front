@@ -11,12 +11,12 @@ const Modal = ({
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (blockScroll) {
+    if (isOpen && blockScroll) {
       document.body.style.overflow = "hidden";
     }
 
     const timer = setTimeout(() => {
-      setIsVisible(true);
+      setIsVisible(isOpen);
     }, 10);
 
     return () => {
@@ -25,7 +25,7 @@ const Modal = ({
       }
       clearTimeout(timer);
     };
-  }, [blockScroll]);
+  }, [blockScroll, isOpen]);
 
   const handleClose = () => {
     setIsVisible(false);

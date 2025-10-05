@@ -9,6 +9,7 @@ const initialState = {
   JWTToken: null,
   desiredAmount: null,
   formData: null,
+  postalCode: "", // Add postal code to state
 };
 
 export const login = createAsyncThunk(
@@ -83,6 +84,9 @@ const userSlice = createSlice({
     saveFormData(state, action) {
       state.formData = action.payload;
     },
+    savePostalCode(state, action) {
+      state.postalCode = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -126,4 +130,5 @@ export const {
   logout,
   changeDesiredAmount,
   saveFormData,
+  savePostalCode,
 } = userSlice.actions;

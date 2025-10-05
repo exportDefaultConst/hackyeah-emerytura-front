@@ -6,8 +6,13 @@ import { setPensionData } from "../redux/slices/pensionSlice";
 import Card from "../components/Card";
 import Divider from "../components/Divider";
 import Button from "../components/Button";
+import Modal from "../components/Modal";
+import Input from "../components/Input";
 import FAQSection from "../components/FAQSection";
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, pdf, Font } from '@react-pdf/renderer';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { RETIREMENT_AVG_PAY_IN_YEAR } from '../constants';
+
 
 // Register fonts for Polish character support
 Font.register({
@@ -89,6 +94,105 @@ const KartaMetryki = ({
     {opis && <p className="mt-1 text-sm text-gray-500">{opis}</p>}
   </div>
 );
+
+// Komponent wykresu prognozy
+const PensionProjectionChart = () => {
+  const chartData = Object.entries(RETIREMENT_AVG_PAY_IN_YEAR).map(([year, values]) => ({
+    year: parseInt(year),
+    ...values
+  }));
+
+  const formatYAxis = (value) => {
+    return `${(value / 1000).toFixed(0)}k`;
+  };
+
+  const formatTooltip = (value) => {
+    return `${value.toFixed(2)} zł`;
+  };
+
+  return (
+    <div className="w-full">
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+          <XAxis 
+            dataKey="year" 
+            ticks={[2030, 2040, 2050, 2060, 2070, 2080]}
+            domain={[2023, 2080]}
+            stroke="#666"
+            style={{ fontSize: '12px' }}
+          />
+          <YAxis 
+            tickFormatter={formatYAxis}
+            stroke="#666"
+            style={{ fontSize: '12px' }}
+          />
+          <Tooltip 
+            formatter={formatTooltip}
+            contentStyle={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              padding: '10px'
+            }}
+          />
+          <Legend 
+            wrapperStyle={{ paddingTop: '20px' }}
+            iconType="line"
+          />
+          <Line 
+            type="monotone" 
+            dataKey="wariant1" 
+            stroke="#3b82f6" 
+            strokeWidth={2.5}
+            dot={false}
+            name="Wariant Realistyczny"
+          />
+          <Line 
+            type="monotone" 
+            dataKey="wariant2" 
+            stroke="#ef4444" 
+            strokeWidth={2.5}
+            dot={false}
+            name="Wariant Pesymistyczny"
+          />
+          <Line 
+            type="monotone" 
+            dataKey="wariant3" 
+            stroke="#10b981" 
+            strokeWidth={2.5}
+            dot={false}
+            name="Wariant Optymistyczny"
+          />
+        </LineChart>
+      </ResponsiveContainer>
+
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-1 bg-blue-500"></div>
+            <span className="font-semibold text-blue-900">Wariant Realistyczny</span>
+          </div>
+          <p className="text-gray-700">2023: 23 308 zł → 2080: 38 739 zł</p>
+        </div>
+        <div className="bg-red-50 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-1 bg-red-500"></div>
+            <span className="font-semibold text-red-900">Wariant Pesymistyczny</span>
+          </div>
+          <p className="text-gray-700">2023: 23 380 zł → 2080: 30 064 zł</p>
+        </div>
+        <div className="bg-green-50 p-4 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-1 bg-green-500"></div>
+            <span className="font-semibold text-green-900">Wariant Optymistyczny</span>
+          </div>
+          <p className="text-gray-700">2023: 23 272 zł → 2080: 50 064 zł</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const PensionReportPDF = ({ data, faqData = null }) => {
   const styles = StyleSheet.create({
@@ -362,7 +466,7 @@ const PensionReportPDF = ({ data, faqData = null }) => {
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Przewidywana Długość Życia</Text>
               <Text style={styles.gridValue}>{dlugoscZycia}</Text>
-              <Text style={styles.gridDescription}>{dlugoscZyciaDesc}</Text>
+              <Text style={styles.gridDescription}></Text>
             </View>
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Inflacja 2025</Text>
@@ -414,8 +518,8 @@ const PensionReportPDF = ({ data, faqData = null }) => {
               <View key={index} style={styles.faqItem}>
                 <Text style={styles.faqRelevance}>
                   {item.relevance === 'high' ? 'Wysoka ważność' : 
-                   item.relevance === 'medium' ? 'Średnia ważność' : 
-                   'Niska ważność'}
+                  item.relevance === 'medium' ? 'Średnia ważność' : 
+                  'Niska ważność'}
                 </Text>
                 <Text style={styles.faqQuestion}>
                   {index + 1}. {item.question}
@@ -761,6 +865,20 @@ const DashboardPage = () => {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-800">
+              Prognoza średnich świadczeń emerytalnych
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Prognoza wysokości świadczeń emerytalnych - trzy warianty rozwoju sytuacji (2023-2080) indeksowane inflacją
+            </p>
+          </div>
+          <PensionProjectionChart />
+        </div>
+      </Card>
+
+      <Card>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-800">
               Inne Prognozy i Założenia
             </h2>
           </div>
@@ -782,7 +900,7 @@ const DashboardPage = () => {
             <KartaMetryki
               tytul="Szacowane Składki Łącznie"
               wartosc={`${laczneSkładki.toLocaleString("pl-PL")} PLN`}
-              opis="Przez cały okres pracy"
+              opis="W trakcie całego okresu pracy"
               klasaIkony="text-green-500"
             />
             <KartaMetryki
@@ -808,7 +926,7 @@ const DashboardPage = () => {
             <KartaMetryki
               tytul="Przewidywana Długość Życia"
               wartosc={dlugoscZycia}
-              opis={dlugoscZyciaDesc}
+              opis={dlugoscZycia} 
               klasaIkony="text-pink-500"
             />
             <KartaMetryki

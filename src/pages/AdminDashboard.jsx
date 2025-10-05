@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { API_URL } from "../constants";
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -34,6 +35,10 @@ const AdminDashboard = () => {
     const position = (y / windowHeight) * 100;
     setGradientPosition(position);
   };
+
+  // Get postal code from pension data
+  const { pensionData } = useSelector((state) => state.pension);
+  const currentSessionPostalCode = pensionData?.postal_code || "";
 
   const fetchRecords = async (page = 1) => {
     setLoading(true);
@@ -385,6 +390,9 @@ const AdminDashboard = () => {
                     Stopa %
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kod pocztowy
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Data
                   </th>
                 </tr>
@@ -406,6 +414,8 @@ const AdminDashboard = () => {
                     const currentPension =
                       resultData.current_pension_projection;
                     const replacementRate = resultData.replacement_rate;
+                    const postalCode =
+                      userData.postal_code || currentSessionPostalCode;
 
                     return (
                       <tr key={record.id} className="hover:bg-gray-50">
@@ -477,6 +487,11 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                            {postalCode || "Brak"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(record.calculation_date).toLocaleDateString(
                             "pl-PL"
                           )}
@@ -495,7 +510,7 @@ const AdminDashboard = () => {
                 ) : (
                   <tr>
                     <td
-                      colSpan="8"
+                      colSpan="9"
                       className="px-6 py-4 text-center text-sm text-gray-500"
                     >
                       Brak danych do wyświetlenia

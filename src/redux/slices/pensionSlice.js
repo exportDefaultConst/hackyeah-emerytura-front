@@ -42,17 +42,19 @@ const filterValidData = (data) => {
   return Object.keys(filtered).length > 0 ? filtered : null;
 };
 
-export const calculatePension = createAsyncThunk(
-  "pension/calculatePension",
-  async (userData, { rejectWithValue }) => {
+export const calculatePension = createAsyncThunk(  "pension/calculatePension",
+  async (userData, { rejectWithValue, dispatch }) => {
     try {
+      // Extract postal_code from userData before sending to API
+      const { postal_code, ...apiUserData } = userData;
+      
       const res = await fetch(`${API_URL}/api/calculate_pension`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ user_data: userData }),
+        body: JSON.stringify({ user_data: apiUserData }),
       });
 
       if (!res.ok) {
@@ -65,6 +67,10 @@ export const calculatePension = createAsyncThunk(
       const filteredData = filterValidData(data);
 
       if (filteredData) {
+        // Add postal_code to the response if it exists
+        if (postal_code) {
+          filteredData.postal_code = postal_code;
+        }
         return filteredData;
       } else {
         throw new Error("Received empty or invalid data from server");

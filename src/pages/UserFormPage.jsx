@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import Modal from "../components/Modal";
 import DropdownList from "../components/DropdownList";
 import { useNavigate } from "react-router";
 import Divider from "../components/Divider";
 import { calculatePension } from "../redux/slices/pensionSlice";
-import { saveFormData } from "../redux/slices/userSlice";
+import { saveFormData, savePostalCode } from "../redux/slices/userSlice";
 
 const UserFormPage = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,10 @@ const UserFormPage = () => {
   const { loading: pensionLoading, error: pensionError } = useSelector(
     (state) => state.pension
   );
+
+  // Postal code modal state - use local state instead of Redux
+  const [showPostalCodeModal, setShowPostalCodeModal] = useState(false);
+  const [postalCode, setPostalCode] = useState("");
 
   const PersonalInfo = useSelector(
     (state) =>
@@ -130,6 +135,24 @@ const UserFormPage = () => {
 
     if (!isFormValid) return;
 
+    // Show postal code modal instead of immediately calculating
+    setShowPostalCodeModal(true);
+  };
+
+  const handlePostalCodeSubmit = async () => {
+    // Close modal and proceed with calculation (postal code stored in local state)
+    setShowPostalCodeModal(false);
+    await proceedWithCalculation();
+  };
+
+  const handlePostalCodeSkip = async () => {
+    // Clear postal code and proceed with calculation
+    setPostalCode("");
+    setShowPostalCodeModal(false);
+    await proceedWithCalculation();
+  };
+
+  const proceedWithCalculation = async () => {
     dispatch(saveFormData(formData));
 
     try {
@@ -156,6 +179,7 @@ const UserFormPage = () => {
         sick_leave_days_per_year: formData.sick_leave_days_per_year
           ? parseFloat(formData.sick_leave_days_per_year)
           : 0.0,
+        postal_code: postalCode || "", // Use local postal code state
       };
 
       console.log("Sending request to Redux with data:", userData);
@@ -402,6 +426,47 @@ const UserFormPage = () => {
           )}
         </form>
       </Card>
+
+      {/* Postal Code Modal */}
+      <Modal
+        isOpen={showPostalCodeModal}
+        onClose={handlePostalCodeSkip}
+        className="w-96"
+      >
+        <div className="text-center space-y-6">
+          <div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              Kod pocztowy
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Podaj swój kod pocztowy, aby otrzymać dodatkowe informacje o lokalnych możliwościach oszczędzania na emeryturę.
+            </p>
+          </div>
+          
+          <div>
+            <Input
+              type="text"
+              placeholder="np. 00-000"
+              value={postalCode}
+              onChange={(e) => setPostalCode(e.target.value)}
+              customClass="text-center"
+            />
+          </div>
+          
+          <div className="flex gap-3">
+            <Button
+              text="Wyślij"
+              onClick={handlePostalCodeSubmit}
+              customClass="flex-1"
+            />
+            <Button
+              text="Nie dziękuję"
+              onClick={handlePostalCodeSkip}
+              customClass="flex-1 bg-gray-500 hover:bg-gray-600"
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
