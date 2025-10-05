@@ -6,6 +6,22 @@ import { setPensionData } from "../redux/slices/pensionSlice";
 import Card from "../components/Card";
 import Divider from "../components/Divider";
 import Button from "../components/Button";
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, pdf, Font } from '@react-pdf/renderer';
+
+// Register fonts for Polish character support
+Font.register({
+  family: 'Roboto',
+  fonts: [
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf',
+      fontWeight: 'normal',
+    },
+    {
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf',
+      fontWeight: 'bold',
+    },
+  ],
+});
 
 // Mock data as fallback
 const mockApiResponse = {
@@ -72,6 +88,282 @@ const KartaMetryki = ({
     {opis && <p className="mt-1 text-sm text-gray-500">{opis}</p>}
   </div>
 );
+
+const PensionReportPDF = ({ data }) => {
+  const styles = StyleSheet.create({
+    page: {
+      flexDirection: 'column',
+      backgroundColor: '#FFFFFF',
+      padding: 30,
+      fontSize: 10,
+      fontFamily: 'Roboto',
+    },
+    title: {
+      fontSize: 18,
+      marginBottom: 20,
+      textAlign: 'center',
+      fontWeight: 'bold',
+      color: '#1a365d',
+    },
+    subtitle: {
+      fontSize: 14,
+      marginBottom: 15,
+      fontWeight: 'bold',
+      color: '#2d3748',
+    },
+    section: {
+      marginBottom: 20,
+      padding: 15,
+      backgroundColor: '#f7fafc',
+      borderRadius: 5,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+      paddingVertical: 4,
+    },
+    label: {
+      fontWeight: 'bold',
+      flex: 1,
+    },
+    value: {
+      flex: 1,
+      textAlign: 'right',
+      color: '#2d3748',
+    },
+    grid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    gridItem: {
+      width: '48%',
+      marginBottom: 10,
+      padding: 10,
+      backgroundColor: '#edf2f7',
+      borderRadius: 3,
+    },
+    gridLabel: {
+      fontSize: 8,
+      textTransform: 'uppercase',
+      color: '#718096',
+      marginBottom: 4,
+    },
+    gridValue: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      color: '#1a202c',
+      marginBottom: 2,
+    },
+    gridDescription: {
+      fontSize: 8,
+      color: '#4a5568',
+    },
+    highlight: {
+      backgroundColor: '#e6fffa',
+      padding: 15,
+      borderRadius: 5,
+      marginBottom: 15,
+      borderLeft: '3px solid #38b2ac',
+    },
+    highlightTitle: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      color: '#234e52',
+      marginBottom: 8,
+    },
+    highlightText: {
+      fontSize: 10,
+      color: '#285e61',
+      lineHeight: 1.4,
+    },
+    footer: {
+      position: 'absolute',
+      bottom: 30,
+      left: 30,
+      right: 30,
+      textAlign: 'center',
+      fontSize: 8,
+      color: '#718096',
+      borderTop: '1px solid #e2e8f0',
+      paddingTop: 10,
+    },
+    pageNumber: {
+      position: 'absolute',
+      fontSize: 8,
+      bottom: 10,
+      left: 0,
+      right: 0,
+      textAlign: 'center',
+      color: '#718096',
+    },
+  });
+
+  const {
+    obecnaEmerytura,
+    urealnionaEmerytura,
+    stopaZastapieniaa,
+    stopaSkladkowa,
+    obecneWynagrodzenie,
+    laczneSkładki,
+    stopaWaloryzacji,
+    inflacja2025,
+    wiekUzytkownika,
+    plecUzytkownika,
+    dodatkoweLata,
+    dlugoscZycia,
+    desiredAmount,
+    procentStopy
+  } = data;
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.title}>Raport Świadczeń Emerytalnych</Text>
+        <Text style={{ textAlign: 'center', marginBottom: 30, fontSize: 10, color: '#718096' }}>
+          Wygenerowano: {new Date().toLocaleDateString('pl-PL')} {new Date().toLocaleTimeString('pl-PL')}
+        </Text>
+
+        {/* Główne wyniki */}
+        <View style={styles.section}>
+          <Text style={styles.subtitle}>Wysokość Świadczeń Emerytalnych</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Wysokość Rzeczywista (Dziś):</Text>
+            <Text style={styles.value}>{obecnaEmerytura.toLocaleString('pl-PL')} PLN</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Wysokość Urealniona (Przyszłość):</Text>
+            <Text style={styles.value}>{urealnionaEmerytura.toLocaleString('pl-PL')} PLN</Text>
+          </View>
+        </View>
+
+        {/* Stopa zastąpienia */}
+        <View style={styles.highlight}>
+          <Text style={styles.highlightTitle}>Stopa Zastąpienia: {stopaZastapieniaa}%</Text>
+          <Text style={styles.highlightText}>
+            Twoja prognozowana emerytura pokryje {procentStopy}% obecnego wynagrodzenia brutto.
+            {stopaZastapieniaa < 100 
+              ? ` Oznacza to, że aby utrzymać obecny standard życia, musisz oszczędzać dodatkowo.`
+              : ` Oznacza to, że NIE musisz oszczędzać dodatkowo.`
+            }
+          </Text>
+        </View>
+
+        {/* Porównanie z oczekiwaniami */}
+        {desiredAmount && (
+          <View style={styles.section}>
+            <Text style={styles.subtitle}>Porównanie Oczekiwań z Prognozą</Text>
+            <View style={styles.row}>
+              <Text style={styles.label}>Twoja predykcja:</Text>
+              <Text style={styles.value}>{desiredAmount.toLocaleString('pl-PL')} PLN</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Prognoza systemu:</Text>
+              <Text style={styles.value}>{urealnionaEmerytura.toLocaleString('pl-PL')} PLN</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>
+                {desiredAmount >= urealnionaEmerytura ? 'Niedobór:' : 'Nadwyżka:'}
+              </Text>
+              <Text style={styles.value}>
+                {Math.abs(desiredAmount - urealnionaEmerytura).toLocaleString('pl-PL')} PLN
+              </Text>
+            </View>
+          </View>
+        )}
+
+        <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+          `Strona ${pageNumber} z ${totalPages}`
+        )} fixed />
+      </Page>
+
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.title}>Szczegółowe Prognozy i Założenia</Text>
+
+        {/* Dane finansowe */}
+        <View style={styles.section}>
+          <Text style={styles.subtitle}>Dane Finansowe</Text>
+          <View style={styles.grid}>
+            <View style={styles.gridItem}>
+              <Text style={styles.gridLabel}>Obecne Wynagrodzenie</Text>
+              <Text style={styles.gridValue}>{obecneWynagrodzenie.toLocaleString('pl-PL')} PLN</Text>
+              <Text style={styles.gridDescription}>Miesięcznie brutto</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.gridLabel}>Stopa Składkowa</Text>
+              <Text style={styles.gridValue}>{stopaSkladkowa}</Text>
+              <Text style={styles.gridDescription}>Tylko ze składek emerytalnych</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.gridLabel}>Szacowane Składki Łącznie</Text>
+              <Text style={styles.gridValue}>{laczneSkładki.toLocaleString('pl-PL')} PLN</Text>
+              <Text style={styles.gridDescription}>Przez cały okres pracy</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.gridLabel}>Stopa Waloryzacji</Text>
+              <Text style={styles.gridValue}>{stopaWaloryzacji}</Text>
+              <Text style={styles.gridDescription}>Średnio rocznie (NBP 2025-2029)</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Dane demograficzne */}
+        <View style={styles.section}>
+          <Text style={styles.subtitle}>Dane Demograficzne i Czasowe</Text>
+          <View style={styles.grid}>
+            <View style={styles.gridItem}>
+              <Text style={styles.gridLabel}>Wiek Użytkownika</Text>
+              <Text style={styles.gridValue}>{wiekUzytkownika} lat</Text>
+              <Text style={styles.gridDescription}>{plecUzytkownika.toUpperCase()}, System ZUS od 1999</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.gridLabel}>Dodatkowe Lata Pracy</Text>
+              <Text style={styles.gridValue}>{dodatkoweLata} lat</Text>
+              <Text style={styles.gridDescription}>Do osiągnięcia wieku emerytalnego</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.gridLabel}>Przewidywana Długość Życia</Text>
+              <Text style={styles.gridValue}>{dlugoscZycia}</Text>
+              <Text style={styles.gridDescription}>Po osiągnięciu wieku emerytalnego</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.gridLabel}>Inflacja 2025</Text>
+              <Text style={styles.gridValue}>{inflacja2025}</Text>
+              <Text style={styles.gridDescription}>Prognozowana inflacja w obecnym roku</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Rekomendacje */}
+        <View style={styles.highlight}>
+          <Text style={styles.highlightTitle}>
+            Co dalej? Brakuje Ci {Math.round(100 - procentStopy)}%
+          </Text>
+          <Text style={styles.highlightText}>
+            {stopaZastapieniaa < 100 
+              ? `Stopa zastąpienia ${stopaZastapieniaa}% oznacza, że aby utrzymać obecny standard życia, musisz rozważyć dodatkowe oszczędności emerytalne lub przedłużenie okresu pracy.`
+              : `Stopa zastąpienia ${stopaZastapieniaa}% oznacza, że emerytura z systemu publicznego będzie wystarczająca do utrzymania obecnego standardu życia.`
+            }
+          </Text>
+        </View>
+
+        <View style={styles.footer}>
+          <Text>
+            Raport wygenerowany na podstawie danych ZUS • System obliczeń emerytalnych
+          </Text>
+          <Text style={{ marginTop: 5 }}>
+            Dokument ma charakter informacyjny i nie stanowi wiążącej prognozy
+          </Text>
+        </View>
+
+        <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+          `Strona ${pageNumber} z ${totalPages}`
+        )} fixed />
+      </Page>
+    </Document>
+  );
+};
 
 const DashboardPage = () => {
   const location = useLocation();
@@ -182,8 +474,38 @@ const DashboardPage = () => {
   }
   // const kolorStopy = procentStopy < 50 ? "bg-yellow-500" : "bg-green-500";
 
+  // PDF generation function
+  const generatePDF = async () => {
+    const pdfData = {
+      obecnaEmerytura,
+      urealnionaEmerytura,
+      stopaZastapieniaa,
+      stopaSkladkowa,
+      obecneWynagrodzenie,
+      laczneSkładki,
+      stopaWaloryzacji,
+      inflacja2025,
+      wiekUzytkownika,
+      plecUzytkownika,
+      dodatkoweLata,
+      dlugoscZycia,
+      desiredAmount,
+      procentStopy
+    };
+
+    const blob = await pdf(<PensionReportPDF data={pdfData} />).toBlob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `raport-emerytalny-${new Date().toISOString().split('T')[0]}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="max-w-4xl mx-auto p-6 space-y-6" id="pension-report">
       <Card>
         <div className="space-y-6">
           <div className="text-center space-y-4">
@@ -447,6 +769,10 @@ const DashboardPage = () => {
                 onClick={() => navigate("/wprowadz-dane")}
               />
               <Button text="Zobacz plany oszczędnościowe" />
+              <Button
+                text="Drukuj"
+                onClick={generatePDF}
+              />
             </div>
           </div>
 
