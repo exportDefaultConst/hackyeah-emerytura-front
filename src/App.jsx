@@ -6,6 +6,7 @@ import FrontPage from "./pages/FrontPage";
 import UserEstimationPage from "./pages/UserEstimationPage";
 import UserFormPage from "./pages/UserFormPage";
 import DashboardPage from "./pages/DashboardPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,11 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardPage />,
         errorElement: <div>error on path: "/dashboard"</div>,
+      },
+      {
+        path: "/admin-dashboard",
+        element: <AdminDashboard />,
+        errorElement: <div>error on path: "/admin-dashboard"</div>,
       },
     ],
   },
