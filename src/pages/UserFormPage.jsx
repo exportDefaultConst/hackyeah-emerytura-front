@@ -92,9 +92,9 @@ const UserFormPage = () => {
           let workEndYear;
 
           if (newFormData.gender === "Mężczyzna") {
-            workEndYear = workStartYear + 65;
+            workEndYear = 2025 + 65 - age;
           } else if (newFormData.gender === "Kobieta") {
-            workEndYear = workStartYear + 60;
+            workEndYear = 2025 + 60 - age;
           }
 
           if (workEndYear) {
@@ -358,8 +358,8 @@ const UserFormPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <p>Dni zwolnień lekarskich rocznie</p>
-                  <Input
+                  <p>Wykorzystane dni L4 rocznie</p>
+                   <Input
                     id="sick_leave_days_per_year"
                     type="number"
                     placeholder="np. 5"

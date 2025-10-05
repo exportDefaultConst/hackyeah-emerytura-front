@@ -6,6 +6,7 @@ import { setPensionData } from "../redux/slices/pensionSlice";
 import Card from "../components/Card";
 import Divider from "../components/Divider";
 import Button from "../components/Button";
+import FAQSection from "../components/FAQSection";
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, pdf, Font } from '@react-pdf/renderer';
 
 // Register fonts for Polish character support
@@ -27,7 +28,7 @@ Font.register({
 const mockApiResponse = {
   calculation_details: {
     assumptions: [
-      "System ZUS od 1999 - formuła zdefiniowanej składki",
+      "System kapitałowy ZUS od 1999 - formuła zdefiniowanej składki",
       "Waloryzacja składek przez 35 lat pracy (2010-2045)",
       "Wcześniejsza emerytura w wieku 55 lat (10 lat przed wiekiem emerytalnym)",
       "Branża IT - stabilne zatrudnienie, niskie ryzyko chorób zawodowych",
@@ -89,7 +90,7 @@ const KartaMetryki = ({
   </div>
 );
 
-const PensionReportPDF = ({ data }) => {
+const PensionReportPDF = ({ data, faqData = null }) => {
   const styles = StyleSheet.create({
     page: {
       flexDirection: 'column',
@@ -197,6 +198,42 @@ const PensionReportPDF = ({ data }) => {
       right: 0,
       textAlign: 'center',
       color: '#718096',
+    },
+    faqSection: {
+      marginBottom: 20,
+      padding: 15,
+      backgroundColor: '#f0f9ff',
+      borderRadius: 5,
+      borderLeft: '3px solid #0ea5e9',
+    },
+    faqTitle: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: '#0c4a6e',
+      marginBottom: 12,
+    },
+    faqItem: {
+      marginBottom: 12,
+      padding: 10,
+      backgroundColor: '#ffffff',
+      borderRadius: 3,
+      borderLeft: '2px solid #e0e7ff',
+    },
+    faqQuestion: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: '#1e40af',
+      marginBottom: 4,
+    },
+    faqAnswer: {
+      fontSize: 9,
+      color: '#374151',
+      lineHeight: 1.4,
+    },
+    faqRelevance: {
+      fontSize: 8,
+      color: '#6b7280',
+      marginBottom: 3,
     },
   });
 
@@ -315,7 +352,7 @@ const PensionReportPDF = ({ data }) => {
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Wiek Użytkownika</Text>
               <Text style={styles.gridValue}>{wiekUzytkownika} lat</Text>
-              <Text style={styles.gridDescription}>{plecUzytkownika.toUpperCase()}, System ZUS od 1999</Text>
+              <Text style={styles.gridDescription}>{plecUzytkownika}</Text>
             </View>
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Dodatkowe Lata Pracy</Text>
@@ -325,7 +362,7 @@ const PensionReportPDF = ({ data }) => {
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Przewidywana Długość Życia</Text>
               <Text style={styles.gridValue}>{dlugoscZycia}</Text>
-              <Text style={styles.gridDescription}>Po osiągnięciu wieku emerytalnego</Text>
+              <Text style={styles.gridDescription}>{dlugoscZyciaDesc}</Text>
             </View>
             <View style={styles.gridItem}>
               <Text style={styles.gridLabel}>Inflacja 2025</Text>
@@ -361,6 +398,46 @@ const PensionReportPDF = ({ data }) => {
           `Strona ${pageNumber} z ${totalPages}`
         )} fixed />
       </Page>
+
+      {/* New FAQ Page */}
+      {faqData && faqData.faq && faqData.faq.length > 0 && (
+        <Page size="A4" style={styles.page}>
+          <Text style={styles.title}>Spersonalizowane FAQ</Text>
+          <Text style={{ textAlign: 'center', marginBottom: 20, fontSize: 10, color: '#718096' }}>
+            Najczęściej zadawane pytania dostosowane do Twojej sytuacji
+          </Text>
+
+          <View style={styles.faqSection}>
+            <Text style={styles.faqTitle}>Pytania i odpowiedzi</Text>
+            
+            {faqData.faq.slice(0, 8).map((item, index) => (
+              <View key={index} style={styles.faqItem}>
+                <Text style={styles.faqRelevance}>
+                  {item.relevance === 'high' ? 'Wysoka ważność' : 
+                   item.relevance === 'medium' ? 'Średnia ważność' : 
+                   'Niska ważność'}
+                </Text>
+                <Text style={styles.faqQuestion}>
+                  {index + 1}. {item.question}
+                </Text>
+                <Text style={styles.faqAnswer}>
+                  {item.answer}
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.footer}>
+            <Text>
+              FAQ wygenerowane na podstawie Twojej sytuacji emerytalnej
+            </Text>
+          </View>
+
+          <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+            `Strona ${pageNumber} z ${totalPages}`
+          )} fixed />
+        </Page>
+      )}
     </Document>
   );
 };
@@ -374,6 +451,8 @@ const DashboardPage = () => {
   );
   const { desiredAmount } = useSelector((state) => state.user);
   const [localError, setLocalError] = useState(null);
+  // State to store FAQ data for PDF generation
+  const [faqDataForPDF, setFaqDataForPDF] = useState(null);
 
   // Funkcja do pobierania danych emerytalnych z API
   const fetchPensionData = async () => {
@@ -453,14 +532,14 @@ const DashboardPage = () => {
   const inflacja2025 = "3.7%";
   const wiekUzytkownika = pensionData?.metadata?.user_age || 52;
   const plecUzytkownika = pensionData?.metadata?.user_gender || "female";
-  const dodatkoweLata = pensionData?.metadata?.user_gender === "female" ? 60 - pensionData?.metadata?.user_age + 18 : 65 - pensionData?.metadata?.user_age  + 18|| 8;
+  const dodatkoweLata = pensionData?.metadata?.user_gender === "female" ? 60 - pensionData?.metadata?.user_age : 65 - pensionData?.metadata?.user_age|| 8;
   const dlugoscZycia = pensionData?.calculation_details?.life_expectancy_months
     ? `${Math.round(
-        pensionData.calculation_details.life_expectancy_months / 12
-      )} lat (${
-        pensionData.calculation_details.life_expectancy_months
-      } miesięcy)`
-    : "21 lat (254.3 miesięcy)";
+        pensionData.calculation_details.life_expectancy_months / 12 + (pensionData?.metadata?.user_gender === "female" ? 60 : 65) 
+      )} lat`
+    : "21 lat";
+  const dlugoscZyciaDesc = (`${pensionData.calculation_details.life_expectancy_months + (pensionData?.metadata?.user_gender === "female" ? 60 : 65) * 12
+  } miesięcy`) || "254.3 miesięcy"
 
   // Oblicz procent dla paska postępu (Stopa Zastąpienia)
   const procentStopy = Math.round(stopaZastapieniaa);
@@ -493,7 +572,7 @@ const DashboardPage = () => {
       procentStopy
     };
 
-    const blob = await pdf(<PensionReportPDF data={pdfData} />).toBlob();
+    const blob = await pdf(<PensionReportPDF data={pdfData} faqData={faqDataForPDF} />).toBlob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -715,9 +794,9 @@ const DashboardPage = () => {
 
             {/* Czas i Wiek */}
             <KartaMetryki
-              tytul="Wiek Użytkownika"
+              tytul="Informacje o Użytkowniku"
               wartosc={`${wiekUzytkownika} lat`}
-              opis={`${plecUzytkownika.toUpperCase()}, System ZUS od 1999`}
+              opis={`${plecUzytkownika === "female" ? "Kobieta" : "Mężczyzna"}`}
               klasaIkony="text-purple-500"
             />
             <KartaMetryki
@@ -729,7 +808,7 @@ const DashboardPage = () => {
             <KartaMetryki
               tytul="Przewidywana Długość Życia"
               wartosc={dlugoscZycia}
-              opis="Po osiągnięciu wieku emerytalnego"
+              opis={dlugoscZyciaDesc}
               klasaIkony="text-pink-500"
             />
             <KartaMetryki
@@ -739,6 +818,36 @@ const DashboardPage = () => {
               klasaIkony="text-teal-500"
             />
           </div>
+        </div>
+      </Card>
+
+      {/* FAQ Section */}
+      <Card>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Spersonalizowane FAQ
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Najczęściej zadawane pytania dostosowane do Twojej sytuacji
+            </p>
+          </div>
+
+          <FAQSection 
+            userData={{
+              age: wiekUzytkownika,
+              gender: plecUzytkownika,
+              salary: obecneWynagrodzenie,
+              industry: pensionData?.metadata?.industry || "IT",
+              position: pensionData?.metadata?.position || "Developer"
+            }}
+            calculationResult={{
+              monthly_pension: urealnionaEmerytura,
+              replacement_rate: stopaZastapieniaa,
+              years_to_work_longer: dodatkoweLata
+            }}
+            onFaqDataChange={setFaqDataForPDF}
+          />
         </div>
       </Card>
 
