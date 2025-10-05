@@ -11,15 +11,15 @@ const initialState = {
 
 // Helper function to filter out null/undefined values
 const filterValidData = (data) => {
-  if (!data || typeof data !== 'object') return null;
+  if (!data || typeof data !== "object") return null;
 
   const filtered = {};
-  
-  Object.keys(data).forEach(key => {
+
+  Object.keys(data).forEach((key) => {
     const value = data[key];
-    
+
     if (value !== null && value !== undefined) {
-      if (typeof value === 'object' && !Array.isArray(value)) {
+      if (typeof value === "object" && !Array.isArray(value)) {
         // Recursively filter nested objects
         const nestedFiltered = filterValidData(value);
         if (nestedFiltered && Object.keys(nestedFiltered).length > 0) {
@@ -27,7 +27,9 @@ const filterValidData = (data) => {
         }
       } else if (Array.isArray(value)) {
         // Filter arrays to remove null/undefined items
-        const filteredArray = value.filter(item => item !== null && item !== undefined);
+        const filteredArray = value.filter(
+          (item) => item !== null && item !== undefined
+        );
         if (filteredArray.length > 0) {
           filtered[key] = filteredArray;
         }
@@ -36,7 +38,7 @@ const filterValidData = (data) => {
       }
     }
   });
-  
+
   return Object.keys(filtered).length > 0 ? filtered : null;
 };
 
@@ -52,16 +54,16 @@ export const calculatePension = createAsyncThunk(
         },
         body: JSON.stringify({ user_data: userData }),
       });
-      
+
       if (!res.ok) {
         throw new Error(errorFormatter(res.status));
       }
 
       const data = await res.json();
-      
+
       // Filter out null/undefined values
       const filteredData = filterValidData(data);
-      
+
       if (filteredData) {
         return filteredData;
       } else {
@@ -117,8 +119,5 @@ const pensionSlice = createSlice({
 
 export default pensionSlice.reducer;
 
-export const {
-  clearPensionData,
-  setPensionData,
-  acknowledgeError,
-} = pensionSlice.actions;
+export const { clearPensionData, setPensionData, acknowledgeError } =
+  pensionSlice.actions;

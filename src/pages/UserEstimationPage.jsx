@@ -16,7 +16,10 @@ import Divider from "../components/Divider";
 import Input from "../components/Input";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { forceSyntheticLoading, setDesiredAmount } from "../redux/slices/userSlice";
+import {
+  changeDesiredAmount,
+  forceSyntheticLoading,
+} from "../redux/slices/userSlice";
 
 const staticChartData = [
   { name: "Średnia", amount: 3000, isUser: false },
@@ -85,7 +88,7 @@ export function UserEstimationPage({}) {
   const chartData = createChartData();
 
   const handleNext = () => {
-    dispatch(setDesiredAmount(desiredAmount));
+    dispatch(changeDesiredAmount(desiredAmount));
     navigate("/wprowadz-dane");
   };
 

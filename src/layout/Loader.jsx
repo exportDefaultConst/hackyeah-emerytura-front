@@ -50,9 +50,9 @@ const Loader = ({ isLoading = true, onExit }) => {
             : "translate-y-8 scale-95 opacity-0"
         }`}
       >
-        <div className="w-4 h-4 rounded-full bg-indigo-600 animate-bounce" />
-        <div className="w-4 h-4 rounded-full bg-indigo-600 animate-bounce [animation-delay:.3s]" />
-        <div className="w-4 h-4 rounded-full bg-indigo-600 animate-bounce [animation-delay:.5s]" />
+        <div className="w-4 h-4 rounded-full bg-(--color-zus-green) animate-bounce" />
+        <div className="w-4 h-4 rounded-full bg-(--color-zus-green) animate-bounce [animation-delay:.3s]" />
+        <div className="w-4 h-4 rounded-full bg-(--color-zus-green) animate-bounce [animation-delay:.5s]" />
       </div>
     </div>
   );
