@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import Card from "../components/Card";
 import { API_URL } from "../constants";
 import { setPensionData } from "../redux/slices/pensionSlice";
 
@@ -38,13 +37,31 @@ const mockApiResponse = {
   "years_to_work_longer": 8
 };
 
+// Komponent pomocniczy do wyświetlania pojedynczych metryk
+const KartaMetryki = ({ tytul, wartosc, opis, klasaIkony = "text-blue-500" }) => (
+  <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-100 shadow-sm transition hover:shadow-md">
+    <div className="flex items-center space-x-3">
+      <div className={`p-2 rounded-full bg-gray-50 ${klasaIkony}`}>
+        {/* Placeholder Icon */}
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2-3-.895-3-2 1.343-2 3-2zM9 12h.01M15 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <p className="text-xs font-semibold uppercase text-gray-500">{tytul}</p>
+    </div>
+    <p className="mt-2 text-2xl font-bold text-gray-800">{wartosc}</p>
+    {opis && <p className="mt-1 text-sm text-gray-500">{opis}</p>}
+  </div>
+);
+
 const DashboardPage = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { pensionData, loading, error, lastUpdated } = useSelector((state) => state.pension);
+  const { desiredAmount } = useSelector((state) => state.user);
   const [localError, setLocalError] = useState(null);
 
-  // Function to fetch pension data from API
+  // Funkcja do pobierania danych emerytalnych z API
   const fetchPensionData = async () => {
     try {
       setLocalError(null);
@@ -63,228 +80,191 @@ const DashboardPage = () => {
       const data = await response.json();
       dispatch(setPensionData(data));
     } catch (err) {
-      console.error("Error fetching pension data:", err);
+      console.error("Błąd podczas pobierania danych emerytalnych:", err);
       setLocalError(err.message);
-      // Use mock data as fallback
+      // Użyj danych testowych jako zapasowych
       dispatch(setPensionData(mockApiResponse));
     }
   };
 
   useEffect(() => {
-    // Check if data was passed from navigation state (from form submission)
+    // Sprawdź, czy dane zostały przekazane z nawigacji (z formularza)
     if (location.state?.pensionData) {
       dispatch(setPensionData(location.state.pensionData));
     } else if (!pensionData) {
-      // Fetch data from API if no data in Redux state and no navigation state
+      // Pobierz dane z API, jeśli brak danych w stanie Redux i brak danych z nawigacji
       fetchPensionData();
     }
   }, [location.state, pensionData, dispatch]);
 
-  // Transform API response into card format
-  const transformApiDataToCards = (data) => {
-    if (!data?.calculation_details) return [];
-
-    const cards = [];
-
-    // Add assumptions as cards
-    if (data.calculation_details.assumptions) {
-      data.calculation_details.assumptions.forEach((assumption) => {
-        const cardData = formatAssumptionToCard(assumption);
-        cards.push(cardData);
-      });
-    }
-
-    // Add other calculation details as cards
-    const additionalDetails = [
-      {
-        title: "Stopa składkowa",
-        description: data.calculation_details.contribution_rate || "19.52%",
-        secondaryDescription: "składki emerytalne"
-      },
-      {
-        title: "Oczekiwana długość życia",
-        description: `${Math.round((data.calculation_details.life_expectancy_months || 210) / 12)} lat`,
-        secondaryDescription: `${data.calculation_details.life_expectancy_months || 210} miesięcy`
-      },
-      {
-        title: "Szacowane składki łącznie",
-        description: `${(data.calculation_details.total_contributions_estimated || 655872).toLocaleString('pl-PL')} PLN`,
-        secondaryDescription: "przez cały okres pracy"
-      },
-      {
-        title: "Stopa waloryzacji",
-        description: data.calculation_details.valorization_rate || "średnio 2.2% rocznie",
-        secondaryDescription: null
-      }
-    ];
-
-    cards.push(...additionalDetails);
-
-    // Add metadata as cards if available
-    if (data.metadata) {
-      const metadataCards = [
-        {
-          title: "Wiek użytkownika",
-          description: `${data.metadata.user_age || 35} lat`,
-          secondaryDescription: data.metadata.user_gender === "male" ? "mężczyzna" : "kobieta"
-        },
-        {
-          title: "Obecne wynagrodzenie",
-          description: `${(data.metadata.current_salary || 8000).toLocaleString('pl-PL')} PLN`,
-          secondaryDescription: "miesięcznie brutto"
-        }
-      ];
-      cards.push(...metadataCards);
-    }
-
-    // Add result metrics as cards
-    const resultCards = [
-      {
-        title: "Stopa zastąpienia",
-        description: `${data.replacement_rate || 52.3}%`,
-        secondaryDescription: "stosunek emerytury do ostatniego wynagrodzenia"
-      }
-    ];
-
-    if (data.years_to_work_longer) {
-      resultCards.push({
-        title: "Dodatkowe lata pracy",
-        description: `${data.years_to_work_longer} lat`,
-        secondaryDescription: "dla lepszej emerytury"
-      });
-    }
-
-    if (data.salary_variability_impact) {
-      resultCards.push({
-        title: "Wpływ zmienności wynagrodzenia",
-        description: typeof data.salary_variability_impact === 'string' 
-          ? data.salary_variability_impact 
-          : `${data.salary_variability_impact}%`,
-        secondaryDescription: typeof data.salary_variability_impact === 'string' 
-          ? null 
-          : "wpływ na wysokość emerytury"
-      });
-    }
-
-    if (data.sick_leave_impact) {
-      resultCards.push({
-        title: "Wpływ zwolnień lekarskich",
-        description: typeof data.sick_leave_impact === 'string' 
-          ? data.sick_leave_impact 
-          : `${data.sick_leave_impact} PLN`,
-        secondaryDescription: typeof data.sick_leave_impact === 'string' 
-          ? null 
-          : "miesięczny wpływ"
-      });
-    }
-
-    cards.push(...resultCards);
-
-    return cards;
-  };
-
-  // Helper function to format assumptions into card format
-  const formatAssumptionToCard = (assumption) => {
-    if (assumption.includes(":")) {
-      const [title, descriptionPart] = assumption.split(":");
-    
-    // Extract content within parentheses for secondaryDescription
-    const parenthesesMatch = descriptionPart.match(/\(([^)]+)\)/);
-    const secondaryDescription = parenthesesMatch ? parenthesesMatch[1] : null;
-    
-    // Remove parentheses content from main description
-    const description = descriptionPart.replace(/\s*\([^)]+\)/g, '').trim();
-    
-    return { 
-      title: title.trim(), 
-      description: description,
-      secondaryDescription: secondaryDescription
-    };
-  } else {
-    // If there's no colon, check for parentheses in the entire text
-    const parenthesesMatch = assumption.match(/\(([^)]+)\)/);
-    const secondaryDescription = parenthesesMatch ? parenthesesMatch[1] : null;
-    const description = assumption.replace(/\s*\([^)]+\)/g, '').trim();
-    
-    return { 
-      title: "", 
-      description: description,
-      secondaryDescription: secondaryDescription
-    };
+  if (loading) {
+    return (
+      <div className="p-4 md:p-6 flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">Ładowanie danych emerytury...</p>
+        </div>
+      </div>
+    );
   }
-};
 
-if (loading) {
-  return (
-    <div className="p-4 md:p-6 flex items-center justify-center h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500 mx-auto mb-4"></div>
-        <p className="text-lg text-gray-600">Ładowanie danych emerytury...</p>
+  if ((error || localError) && !pensionData) {
+    return (
+      <div className="p-4 md:p-6 flex items-center justify-center h-screen">
+        <div className="text-center">
+          <p className="text-lg text-red-600 mb-4">
+            Błąd podczas ładowania danych: {error || localError}
+          </p>
+          <button 
+            onClick={fetchPensionData}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Spróbuj ponownie
+          </button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-if ((error || localError) && !pensionData) {
+  // Wyciągnij dane z fallbackami
+  const obecnaEmerytura = pensionData?.current_pension_projection || 4642;
+  const urealnionaEmerytura = pensionData?.indexed_pension_projection || 6840;
+  const stopaZastapieniaa = pensionData?.replacement_rate || 41.2;
+  const stopaSkladkowa = pensionData?.calculation_details?.contribution_rate || "19.52%";
+  const obecneWynagrodzenie = pensionData?.metadata?.current_salary || 8000;
+  const laczneSkładki = pensionData?.calculation_details?.total_contributions_estimated || 1847520;
+  const stopaWaloryzacji = "3.8%";
+  const inflacja2025 = "3.7%";
+  const wiekUzytkownika = pensionData?.metadata?.user_age || 52;
+  const plecUzytkownika = pensionData?.metadata?.user_gender || "female";
+  const dodatkoweLata = pensionData?.years_to_work_longer || 8;
+  const dlugoscZycia = pensionData?.calculation_details?.life_expectancy_months ? 
+    `${Math.round(pensionData.calculation_details.life_expectancy_months / 12)} lat (${pensionData.calculation_details.life_expectancy_months} miesięcy)` : 
+    "21 lat (254.3 miesięcy)";
+
+  // Oblicz procent dla paska postępu (Stopa Zastąpienia)
+  const procentStopy = Math.round(stopaZastapieniaa);
+  const kolorStopy = procentStopy < 50 ? 'bg-yellow-500' : 'bg-green-500';
+
   return (
-    <div className="p-4 md:p-6 flex items-center justify-center h-screen">
-      <div className="text-center">
-        <p className="text-lg text-red-600 mb-4">
-          Błąd podczas ładowania danych: {error || localError}
-        </p>
-        <button 
-          onClick={fetchPensionData}
-          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
-          Spróbuj ponownie
-        </button>
-      </div>
-    </div>
-  );
-}
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-10 font-sans">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">Wyniki Symulacji Emerytalnej</h1>
+        <p className="text-lg text-gray-500 mb-8">Podsumowanie wyników symulacji emerytalnej na podstawie Twoich założeń.</p>
 
-const formattedCalculationDetails = transformApiDataToCards(pensionData);
+        {/* 1. GŁÓWNE WNIOSKI - SEKCJA HERO */}
+        <div className="grid md:grid-cols-2 gap-6 mb-10">
+          {/* Karta Wysokość Rzeczywista */}
+          <div className="p-6 bg-white border-b-4 border-green-500 shadow-2xl rounded-2xl">
+            <p className="text-xl font-semibold text-gray-600">Wysokość Rzeczywista (Dziś)</p>
+            <p className="text-5xl font-bold text-green-700 mt-1 mb-3">{obecnaEmerytura.toLocaleString('pl-PL')} PLN</p>
+            <p className="text-lg text-gray-500">Miesięcznie (w cenach bieżących)</p>
+          </div>
+          
+          {/* Karta Wysokość Urealniona */}
+          <div className="p-6 bg-white border-b-4 border-red-500 shadow-2xl rounded-2xl">
+            <p className="text-xl font-semibold text-gray-600">Wysokość Urealniona (Przyszłość)</p>
+            <p className="text-5xl font-bold text-red-700 mt-1 mb-3">{urealnionaEmerytura.toLocaleString('pl-PL')} PLN</p>
+            <p className="text-lg text-gray-500">Miesięcznie (po waloryzacji do przyszłych cen)</p>
+          </div>
+        </div>
 
-  return (
-    <div className="p-4 md:p-6 md:h-screen md:overflow-hidden">
-      <Card
-        title="Wyniki Symulacji"
-        description="Podsumowanie wyników symulacji emerytalnej."
-        customClass="flex-col text-center md:h-full md:overflow-y-auto"
-      >
-        {/* Main pension amounts - responsive scaling */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-4 w-full mb-4 md:mb-6">
-          <Card
-            title="Wysokość Rzeczywista"
-            description={`${(pensionData?.current_pension_projection || 4180).toLocaleString('pl-PL')} PLN`}
-            secondaryDescription="miesięcznie"
-            variant="highlight"
-            customClass="h-24 md:h-32 lg:h-40 flex items-center justify-center green-description"
+        {/* WIZUALIZACJA STOPY ZASTĄPIENIA */}
+        <div className="bg-white p-6 rounded-2xl shadow-xl mb-12 border border-gray-100">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Realistyczna Stopa Zastąpienia: <span className="text-4xl font-extrabold text-indigo-600">{stopaZastapieniaa}%</span></h2>
+          <p className="text-gray-600 mb-4">To oznacza, że Twoja prognozowana emerytura pokryje **{procentStopy}%** Twojego obecnego wynagrodzenia brutto.</p>
+          
+          {/* Pasek Postępu (Stopa Zastąpienia) */}
+          <div className="flex items-center space-x-4">
+            <div className="flex-grow bg-gray-200 rounded-full h-4">
+              <div
+                className={`h-4 rounded-full ${kolorStopy}`}
+                style={{ width: `${Math.min(procentStopy, 100)}%` }}
+                aria-valuenow={procentStopy}
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+            </div>
+            <span className="text-lg font-semibold text-gray-800">{procentStopy}%</span>
+          </div>
+
+          <div className="flex justify-between text-sm text-gray-500 mt-2">
+            <span>0 PLN</span>
+            <span>{urealnionaEmerytura.toLocaleString('pl-PL')} PLN (Prognoza)</span>
+            <span>{obecneWynagrodzenie.toLocaleString('pl-PL')} PLN (Obecne Wynagrodzenie)</span>
+          </div>
+        </div>
+        
+        {/* 2. SZCZEGÓŁY I ZAŁOŻENIA */}
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Szczegóły Prognozy i Założenia Symulacji</h2>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Kolumna 1: Finanse */}
+          <KartaMetryki 
+            tytul="Obecne Wynagrodzenie" 
+            wartosc={`${obecneWynagrodzenie.toLocaleString('pl-PL')} PLN`} 
+            opis="Miesięcznie brutto"
+            klasaIkony="text-indigo-500"
           />
-          <Card
-            title="Wysokość Urealniona"
-            description={`${(pensionData?.indexed_pension_projection || 6853).toLocaleString('pl-PL')} PLN`}
-            secondaryDescription="miesięcznie"
-            variant="highlight"
-            customClass="h-24 md:h-32 lg:h-40 flex items-center justify-center red-description"
+          <KartaMetryki 
+            tytul="Stopa Składkowa" 
+            wartosc={stopaSkladkowa} 
+            opis="Tylko ze składek emerytalnych"
+            klasaIkony="text-red-500"
+          />
+          <KartaMetryki 
+            tytul="Szacowane Składki Łącznie" 
+            wartosc={`${laczneSkładki.toLocaleString('pl-PL')} PLN`} 
+            opis="Przez cały okres pracy"
+            klasaIkony="text-green-500"
+          />
+          <KartaMetryki 
+            tytul="Stopa Waloryzacji (Prognoza)" 
+            wartosc={stopaWaloryzacji} 
+            opis="Średnio rocznie (NBP 2025-2029)"
+            klasaIkony="text-amber-500"
+          />
+          
+          {/* Kolumna 2: Czas i Wiek */}
+          <KartaMetryki 
+            tytul="Wiek Użytkownika" 
+            wartosc={`${wiekUzytkownika} lat`} 
+            opis={`${plecUzytkownika.toUpperCase()}, System ZUS od 1999`}
+            klasaIkony="text-purple-500"
+          />
+          <KartaMetryki 
+            tytul="Dodatkowe Lata Pracy" 
+            wartosc={`${dodatkoweLata} lat`} 
+            opis="Do osiągnięcia wieku emerytalnego"
+            klasaIkony="text-cyan-500"
+          />
+          <KartaMetryki 
+            tytul="Przewidywana Długość Życia" 
+            wartosc={dlugoscZycia} 
+            opis="Po osiągnięciu wieku emerytalnego"
+            klasaIkony="text-pink-500"
+          />
+          <KartaMetryki 
+            tytul="Inflacja 2025" 
+            wartosc={inflacja2025} 
+            opis="Prognozowana inflacja"
+            klasaIkony="text-teal-500"
           />
         </div>
 
-        {/* Calculation details flexbox - viewport fitting */}
-        <div className="flex flex-wrap justify-center gap-1 w-full md:flex-1">
-          {formattedCalculationDetails.map((detail, index) => (
-            <Card
-              key={index}
-              title={detail.title}
-              description={detail.description}
-              secondaryDescription={detail.secondaryDescription}
-              variant="zus"
-              customClass="w-32 h-32 md:w-36 md:h-36 lg:w-48 lg:h-48 flex flex-col justify-center text-center flex-shrink-0"
-            />
-          ))}
+        {/* 3. PODSUMOWANIE I WEZWANIE DO DZIAŁANIA */}
+        <div className="mt-12 p-8 bg-indigo-50 rounded-2xl border-l-4 border-indigo-600 shadow-lg flex flex-col md:flex-row justify-between items-center">
+          <div className="mb-4 md:mb-0">
+            <h3 className="text-xl font-bold text-indigo-800">Co dalej? Brakuje Ci {Math.round(100 - procentStopy)}%</h3>
+            <p className="text-indigo-700">Stopa zastąpienia {stopaZastapieniaa}% oznacza, że aby utrzymać obecny standard, musisz oszczędzać.</p>
+          </div>
+          <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition duration-300 transform hover:scale-105">
+            Zmień Założenia lub Zobacz Plany Oszczędnościowe
+          </button>
         </div>
-        {/* Data source indicator */}
-        <div className="mt-4 text-sm text-gray-500">
+
+        {/* Wskaźnik źródła danych */}
+        <p className="text-center text-xs text-gray-400 mt-8">
           {location.state?.pensionData ? 
             "Dane z formularza" : 
             (error || localError) ? "Dane testowe (błąd API)" : "Dane z Redux Store"
@@ -299,8 +279,8 @@ const formattedCalculationDetails = transformApiDataToCards(pensionData);
               • Obliczono: {new Date(pensionData.metadata.calculation_date).toLocaleDateString('pl-PL')}
             </span>
           )}
-        </div>
-      </Card>
+        </p>
+      </div>
     </div>
   );
 };

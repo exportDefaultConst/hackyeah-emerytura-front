@@ -7,6 +7,7 @@ const initialState = {
   error: null,
   userData: null,
   JWTToken: null,
+  desiredAmount: null,
 };
 
 export const login = createAsyncThunk(
@@ -75,6 +76,9 @@ const userSlice = createSlice({
     logout(state) {
       state.userData = null;
     },
+    setDesiredAmount(state, action) {
+      state.desiredAmount = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -116,4 +120,5 @@ export const {
   forceSyntheticLoading,
   acknowledgeError,
   logout,
+  setDesiredAmount,
 } = userSlice.actions;
